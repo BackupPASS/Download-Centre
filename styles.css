@@ -339,30 +339,6 @@
       margin-top:10px;
     }
 
-    /* Footer */
-    .footer{
-      color:#e5e7eb;
-      text-align:center;
-      padding:8px 10px;
-      position:fixed;
-      bottom:0;
-      left:0;
-      width:100%;
-      border-radius:18px 18px 0 0;
-      background: rgba(0,0,0,.75);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-top:1px solid rgba(255,255,255,.18);
-      font-size:12px;
-      z-index:10;
-    }
-    .footer a{
-      color:#fff;
-      text-decoration:none;
-    }
-    .footer a:hover{
-      text-decoration:underline;
-    }
 
 .cookie-card {
   max-width: 340px;
@@ -435,3 +411,30 @@
         font-size:11px;
       }
     }
+
+     .footer {
+  color: #fff;
+  text-align: center;
+  padding: 8px 0; /* a bit more padding for comfort */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  border-radius: 35px 35px 0 0;
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: saturate(180%) blur(30px);
+  -webkit-backdrop-filter: saturate(180%) blur(30px);
+
+  box-shadow:
+    0 8px 32px 0 rgba(31, 38, 135, 0.37),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+
+  transition: background-color 0.3s ease;
+}
+
+.footer a {
+  color: #fff;
+  text-decoration: none;
+}
