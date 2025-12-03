@@ -1,51 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vinti Downloads</title>
-    <link rel="icon" href="VintiLogo.png">
-    <link rel="stylesheet" href="styles.css">       
-    <script defer="defer" type="text/javascript" src="https://www.plingifyplug.com/im_livechat/loader/2"></script>    
-    <script defer="defer" type="text/javascript" src="https://www.plingifyplug.com/im_livechat/assets_embed.js"></script>
+  <meta charset="UTF-8" />
+  <title>PlingifyPlug - Downloads</title>
+  <link rel="icon" href="PlingifyPlugLogo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css">
+  <script defer type="text/javascript" src="https://www.plingifyplug.com/im_livechat/loader/2"></script>
+  <script defer type="text/javascript" src="https://www.plingifyplug.com/im_livechat/assets_embed.js"></script>
 </head>
 <body>
-<div class="text-container">
-    <div class="title-download">
-        <h1 class="vinti-title">Vinti Download</h1>
-    </div>
+  <div class="shade"></div>
 
-    <div id="notification-container" class="notification-container">
-        <!-- Platform-specific notifications will be added here by JavaScript -->
-    </div>
-</div>
-
-<footer class="footer">
-    <p>© 2025 PlingifyPlug. All rights reserved. | <a href="https://plingifyplug.com/">PlingifyPlug</a> | <a
-            href="https://plingifyplug.com/contact-us">Support</a> | <a
-            href="https://plingifyplug.com/privacy">Privacy Policy</a>
-</footer>
-
-      <div class="cookie-card" id="cookie-card">
-      <span class="title">🍪 Cookie Notice</span>
-        <p class="description">We use cookies to ensure that we give you the best experience on our website. <a href="https://www.plingifyplug.com/privacy">Read cookies policies</a>. </p>
-          <div class="actions">
-            <button class="accept" id="accept-cookies">
-              Accept
-            </button>
+  <div class="wrap">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="PlingifyPlugLogo.png" alt="PlingifyPlug">
+        <div>
+          <div class="t1">PlingifyPlug</div>
+          <div class="sub">Downloads</div>
+        </div>
       </div>
+
+      <div class="important">
+        <div class="important-title">Important Information</div>
+        <p>
+          Vinti and PlingifyPlug Hub are currently hosted via GitHub. Please only download from official PlingifyPlug links "PlingifyPlug.com", "PlingifyPlug.odoo.com" & "backuppass.github.io".
+        </p>
+        <p class="small">
+          For live status of apps, sites and systems, view the Status Centre.
+        </p>
+        <a class="pill-link" href="https://backuppass.github.io/Product-Centre/">
+          Open Product Centre
+        </a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-title">Downloads</div>
+        <div class="nav">
+          <button data-target="vinti" class="active">
+            Vinti
+            <span class="badge">Windows / macOS / Linux</span>
+          </button>
+          <button data-target="hub">
+            PlingifyPlug Hub
+            <span class="badge">Windows</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN PANEL -->
+    <main class="panel">
+      <div class="header">
+        <div>
+          <h1 id="page-title">Vinti Download</h1>
+          <div class="subhead" id="header-sub">
+            Get the latest version of Vinti for your device.
+          </div>
+        </div>
+        <div class="toolbar">
+          <button class="btn ghost" onclick="window.location.href='https://backuppass.github.io/Status-Centre'">
+            View Status
+          </button>
+        </div>
+      </div>
+
+      <!-- VINTI SECTION -->
+      <section id="vinti" class="section active">
+        <div class="grid">
+          <!-- DOWNLOAD -->
+          <div class="card col-12">
+            <div class="section-title">Download</div>
+            <h2>Vinti</h2>
+            <p class="hint">We’ll detect your platform and show the correct download option below.</p>
+            <div id="vinti-download"></div>
+          </div>
+
+          <!-- INFO -->
+          <div class="card col-12">
+            <div class="section-title">About Vinti</div>
+            <h2>Fast, Efficient & Secure</h2>
+            <p class="hint">
+              Vinti is a modern web browser designed for speed, efficiency and security, with PlingifyPlug AntiMalware built in to help
+              protect you from malicious downloads and harmful websites.
+            </p>
+            <ul class="clean">
+              <li>• Integrated PlingifyPlug AntiMalware™ for safer browsing.</li>
+              <li>• Optimised for everyday use such as streaming, shopping and productivity.</li>
+              <li>• Available for Windows, macOS and Linux (Linux currently in BETA).</li>
+            </ul>
+          </div>
+
+          <!-- INSTRUCTIONS -->
+          <div class="card col-12">
+            <div class="section-title">Instructions</div>
+            <h2>Installing Vinti</h2>
+            <h3>Windows</h3>
+            <ul class="clean">
+              <li>1. Download the setup application.</li>
+              <li>2. Run the application.</li>
+              <li>3. Follow the instructions.</li>
+              <li>4. Once installed, open Vinti from your desktop.</li>
+            </ul>
+            <h3>MacOS</h3>
+            <ul class="clean">
+              <li>1. Download the application.</li>
+              <li>2. Run the application.</li>
+              <li>3. If the application doesnt open please allow the application to run under secuirty in System Preferences > Security & Privacy > General.</li>
+            </ul>
+            <h3>Linux</h3>
+            <ul class="clean">
+              <li>1. Download the zip file.</li>
+              <li>2. Exract the folder.</li>
+              <li>3. Open the instructions file.</li>
+              <li>4. Follow the steps to run the installer.</li>
+              <li>5. Open Vinti from the app drawer.</li>
+            </ul>
+            <div class="btn-row">
+              <a class="btn-small" href="https://www.plingifyplug.com/privacy">Privacy Policy</a>
+              <a class="btn-small" href="https://backuppass.github.io/Status-Centre">Open Status Centre</a>
+            </div>
+          </div>
+
+          <!-- REQUIREMENTS -->
+          <div class="card col-12">
+            <div class="section-title">Requirements</div>
+            <h2>Vinti System Requirements</h2>
+            <div class="two-col-req">
+              <div class="req-block">
+                <h3>Windows</h3>
+                <ul>
+                  <li>• Windows 10 or later (64-bit)</li>
+                  <li>• 4 GB RAM (8 GB recommended)</li>
+                  <li>• 500 MB free disk space</li>
+                  <li>• Stable internet connection for updates</li>
+                </ul>
+              </div>
+              <div class="req-block">
+                <h3>macOS</h3>
+                <ul>
+                  <li>• macOS Big Sur 11.7 or later</li>
+                  <li>• Intel or Apple Silicon Mac</li>
+                  <li>• 4 GB RAM minimum</li>
+                  <li>• 500 MB free disk space</li>
+                </ul>
+              </div>
+              <div class="req-block">
+                <h3>Linux (BETA)</h3>
+                <ul>
+                  <li>• Modern 64-bit distro (Ubuntu, Debian, etc.)</li>
+                  <li>• 4 GB RAM minimum</li>
+                  <li>• 500 MB free disk space</li>
+                  <li>• Ability to run AppImage / installer script</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HUB SECTION -->
+      <section id="hub" class="section">
+        <div class="grid">
+          <!-- DOWNLOAD -->
+          <div class="card col-12">
+            <div class="section-title">Download</div>
+            <h2>PlingifyPlug Hub</h2>
+            <p class="hint">We’ll detect your platform and show if PlingifyPlug Hub is available.</p>
+            <div id="hub-download"></div>
+          </div>
+
+          <!-- INFO -->
+          <div class="card col-12">
+            <div class="section-title">About PlingifyPlug Hub</div>
+            <h2>Your Launcher for PlingifyPlug</h2>
+            <p class="hint">
+              PlingifyPlug Hub is a central launcher where you can access Vinti, Instonomo and other PlingifyPlug services from one place.
+            </p>
+            <ul class="clean">
+              <li>• Quickly install and update supported PlingifyPlug apps.</li>
+              <li>• View announcements and information directly inside the Hub.</li>
+              <li>• Integrated PlingifyPlug AntiMalware for additional safety.</li>
+            </ul>
+          </div>
+
+          <!-- INSTRUCTIONS -->
+          <div class="card col-12">
+            <div class="section-title">Instructions</div>
+            <h2>Installing PlingifyPlug Hub</h2>
+            <h3>Windows</h3>
+            <ul class="clean">
+              <li>1. Download the setup application.</li>
+              <li>2. Run the application.</li>
+              <li>3. Follow the instructions.</li>
+              <li>4. Once installed, open PlingifyPlug-Hub from your desktop.</li>
+            </ul>
+            <div class="btn-row">
+              <a class="btn-small" href="https://www.plingifyplug.com/privacy">Privacy Policy</a>
+              <a class="btn-small" href="https://backuppass.github.io/Status-Centre">Open Status Centre</a>
+            </div>
+          </div>
+
+          <!-- REQUIREMENTS -->
+          <div class="card col-12">
+            <div class="section-title">Requirements</div>
+            <h2>PlingifyPlug Hub System Requirements</h2>
+            <div class="two-col-req">
+              <div class="req-block">
+                <h3>Windows</h3>
+                <ul>
+                  <li>• Windows 10 or later (64-bit)</li>
+                  <li>• 4 GB RAM minimum</li>
+                  <li>• 500 MB free disk space</li>
+                  <li>• Internet connection for updates and downloads</li>
+                </ul>
+              </div>
+              <div class="req-block">
+                <h3>Other Platforms</h3>
+                <ul>
+                  <li>• PlingifyPlug Hub is currently only available on Windows.</li>
+                  <li>• For other platforms, you can still use Vinti where supported.</li>
+                </ul>
+              </div>
+              <div class="req-block">
+                <h3>Notes</h3>
+                <ul>
+                  <li>• Hub is currently in BETA and may contain bugs.</li>
+                  <li>• You use this application at your own risk.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
   </div>
 
-<div id="background-slideshow"></div>
-<div id = "verification-card" class = "card" style = "display: none">
-        <div class = "content">
-              <div class="title">To Verify Your Human Enter: </div>
-                 <div class="desc"> 3£7hJKl2@ </div>
-            <div id = "verify-result" style = "display: none"> </div>
-            <input id = "verify-input" style ="margin: 5px; padding: 8px; border-radius: 8px"></input>
-             <button  style=" margin: 5px; padding: 8px; border-radius: 8px " id = "verify-btn">Verify</button>
-       </div>
-</div>
-<script src="script.js"></script>
+  <div class="footer">
+    © 2025 PlingifyPlug. All rights reserved. |
+    <a href="https://plingifyplug.com/">PlingifyPlug</a> |
+    <a href="https://plingifyplug.com/contact-us">Support</a> |
+    <a href="https://plingifyplug.com/privacy">Privacy Policy</a>
+  </div>
+
+  <!-- Cookie Notice -->
+  <div class="cookie-card" id="cookie-card">
+    <span class="title">🍪 Cookie Notice</span>
+    <p class="description">
+      We use cookies to ensure that we give you the best experience on our website.
+      <a href="https://www.plingifyplug.com/privacy">Read cookies policies</a>.
+    </p>
+    <div class="actions">
+      <button class="accept" id="accept-cookies">Accept</button>
+    </div>
+  </div>
+
+  <script></script>
 </body>
 </html>
