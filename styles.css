@@ -364,58 +364,65 @@
       text-decoration:underline;
     }
 
-    /* Cookie card */
-    .cookie-card {
-      max-width: 340px;
-      padding: 0.9rem 1.1rem;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-radius: 14px;
-      box-shadow: var(--shadow);
-      display: none;
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 9999;
-      border: 1px solid rgba(255, 255, 255, 0.10);
-    }
-    .cookie-card .title {
-      font-weight: 600;
-      color: var(--text);
-      font-size: 14px;
-    }
-    .cookie-card .description {
-      margin-top: 0.75rem;
-      font-size: 12px;
-      line-height: 1.4;
-      color: var(--muted);
-    }
-    .cookie-card .description a {
-      color: var(--pri);
-    }
-    .cookie-card .description a:hover {
-      text-decoration: underline;
-    }
-    .cookie-card .actions {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 0.75rem;
-      gap: 8px;
-    }
-    .cookie-card .accept {
-      font-size: 12px;
-      font-weight: 500;
-      border-radius: 10px;
-      padding: 0.45rem 0.95rem;
-      cursor: pointer;
-      background: #000;
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-    }
-    .cookie-card .accept:hover {
-      background: #1a1a1a;
-    }
+.cookie-card {
+  max-width: 340px;
+  padding: 0.9rem 1.1rem;
+  background: rgba(0, 0, 0, 0.188);             
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 14px;                          
+  box-shadow: var(--shadow);
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  border: 1px solid rgba(255, 255, 255, 0.10);  
+}
+
+.cookie-card .title {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.cookie-card .description {
+  margin-top: 0.75rem;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.cookie-card .description a {
+  color: var(--pri);
+}
+
+.cookie-card .description a:hover {
+  text-decoration: underline;
+}
+
+.cookie-card .actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.75rem;
+  gap: 8px;
+}
+
+.cookie-card .accept {
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 10px;
+  padding: 0.45rem 0.95rem;
+  cursor: pointer;
+  background: #00000016;                             
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.cookie-card .accept:hover {
+  background: #1a1a1a;
+}
+
 
     @media(max-width:700px){
       .wrap{
