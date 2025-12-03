@@ -136,7 +136,7 @@
           'Windows Users',
           'PlingifyPlug Hub is available for Windows 10+. You will be taken to the Hub download page.',
           link,
-          'Open Hub Download Page'
+          'Download'
         );
       } else {
         card = createDownloadCard(
