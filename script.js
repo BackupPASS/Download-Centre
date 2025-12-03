@@ -1,136 +1,172 @@
-let currentIndex = 0;
-const images = [
-    'image2.jpg',
-];
-const slideshow = document.getElementById('background-slideshow');
+ const navButtons = document.querySelectorAll('.nav button');
+    const sections = document.querySelectorAll('.section');
+    const pageTitle = document.getElementById('page-title');
+    const headerSub = document.getElementById('header-sub');
 
-function changeBackground(index) {
-    slideshow.style.backgroundImage = `url(${images[index]})`;
-    currentIndex = index;
-}
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-target');
+        navButtons.forEach(b => b.classList.remove('active'));
+        sections.forEach(s => s.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(target).classList.add('active');
 
-function nextBackground() {
-    currentIndex = (currentIndex + 1) % images.length;
-    changeBackground(currentIndex);
-}
+        if (target === 'vinti') {
+          pageTitle.textContent = 'Vinti Download';
+          headerSub.textContent = 'Get the latest version of Vinti for your device.';
+        } else {
+          pageTitle.textContent = 'PlingifyPlug Hub Download';
+          headerSub.textContent = 'Download PlingifyPlug Hub for supported platforms.';
+        }
+      });
+    });
 
-changeBackground(0);
-
-setInterval(nextBackground, 5000);
-
-const notificationContainer = document.getElementById('notification-container');
-let downloadBtn;
-
-function createNotificationCard(platform, title, desc, downloadLink, requirementsLink, downloadButtonText) {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.id = `${platform}-notification`;
-
-    const icon = document.createElement('div');
-    icon.className = 'icon';
-    icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-      <g id="SVGRepo_iconCarrier">
-         <path stroke-linejoin="round" stroke-linecap="round" stroke-width="1.5" stroke="#f222" d="M20 14V17.5C20 20.5577 16 20.5 12 20.5C8 20.5 4 20.5577 4 17.5V14M12 15L12 3M12 15L8 11M12 15L16 11"></path>
-    </g>
-  </svg>`;
-
-    const content = document.createElement('div');
-    content.className = 'content';
-    content.innerHTML = `<span class="title">${title}</span>
-                      <div class="desc">${desc}</div>`;
-
-    const actions = document.createElement('div');
-    actions.className = 'actions';
-
-    if (downloadLink) {
-        actions.innerHTML += `<div><a href="${downloadLink}" class="download">${downloadButtonText}</a></div>`;
+    // OS detection helper
+    function getOSInfo(){
+      const ua = navigator.userAgent;
+      if (ua.indexOf('Windows') !== -1) return {id:'windows', name:'Windows'};
+      if (ua.indexOf('Mac') !== -1 && ua.indexOf('iPhone') === -1) return {id:'mac', name:'macOS'};
+      if (ua.indexOf('iPhone') !== -1) return {id:'iphone', name:'iPhone'};
+      if (ua.indexOf('Android') !== -1) return {id:'android', name:'Android'};
+      if (ua.indexOf('CrOS') !== -1) return {id:'chromeos', name:'ChromeOS'};
+      if (ua.indexOf('Linux') !== -1 && ua.indexOf('Android') === -1) return {id:'linux', name:'Linux'};
+      return {id:'unknown', name:'your device'};
     }
 
-    if (requirementsLink) {
-        actions.innerHTML += `<div><a href="${requirementsLink}" class="notnow">To view requirements click here.</a></div>`;
+    function createDownloadCard(title, desc, downloadLink, downloadLabel, extraLink){
+      const card = document.createElement('div');
+      card.className = 'download-card';
+
+      const icon = document.createElement('div');
+      icon.className = 'download-icon';
+      icon.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M12 3v12m0 0 4-4m-4 4-4-4M5 15v3.5C5 20.09 6.79 21 12 21s7-0.91 7-2.5V15"/>
+        </svg>`;
+
+      const content = document.createElement('div');
+      content.className = 'download-content';
+
+      const t = document.createElement('div');
+      t.className = 'download-title';
+      t.textContent = title;
+
+      const d = document.createElement('div');
+      d.className = 'download-desc';
+      d.innerHTML = desc;
+
+      const actions = document.createElement('div');
+      actions.className = 'download-actions';
+
+      if (downloadLink) {
+        const a = document.createElement('a');
+        a.href = downloadLink;
+        a.className = 'btn-small primary';
+        a.textContent = downloadLabel || 'Download';
+        actions.appendChild(a);
+      }
+
+      if (extraLink) {
+        const b = document.createElement('a');
+        b.href = extraLink;
+        b.className = 'btn-small';
+        b.textContent = 'View requirements';
+        actions.appendChild(b);
+      }
+
+      content.appendChild(t);
+      content.appendChild(d);
+      content.appendChild(actions);
+      card.appendChild(icon);
+      card.appendChild(content);
+      return card;
     }
 
-    const closeButtonContainer = document.createElement('a');
-    closeButtonContainer.href = 'https://plingifyplug.com';
-    const closeButton = document.createElement('button');
-    closeButton.type = 'button';
-    closeButton.className = 'close';
-    closeButton.innerHTML = `<svg aria-hidden="true" fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"></path>
-     </svg>`;
+    // Vinti download logic (same responses as before)
+    const vintiContainer = document.getElementById('vinti-download');
+    const os = getOSInfo();
 
-    closeButtonContainer.appendChild(closeButton);
+    (function renderVinti(){
+      let card;
+      if (os.id === 'windows') {
+        const link = 'https://github.com/BackupPASS/Downloads-Vinti/releases/download/V2.50.90/Vinti_Setup_2.50.90.exe';
+        card = createDownloadCard(
+          'Windows Users',
+          'Vinti for Windows 10+. Click download to get the latest installer.',
+          link,
+          'Download Vinti for Windows'
+        );
+      } else if (os.id === 'mac') {
+        const link = 'https://github.com/BackupPASS/Downloads/raw/refs/heads/main/Vinti%20MacOS.app.zip';
+        card = createDownloadCard(
+          'macOS Users',
+          'Vinti for macOS Big Sur 11.7+. Download the .app bundle and follow the instructions.',
+          link,
+          'Download Vinti for macOS'
+        );
+      } else if (os.id === 'linux') {
+        const link = 'https://github.com/BackupPASS/Downloads-Vinti/releases/download/V2.50.82/Vinti.Setup.Linux.zip';
+        card = createDownloadCard(
+          'Linux Users',
+          'Vinti for Linux (all major distributions). This release is currently in BETA.',
+          link,
+          'Download Vinti for Linux'
+        );
+      } else {
+        // iPhone / Android / ChromeOS / unknown
+        card = createDownloadCard(
+          os.name + ' Users',
+          `This software is not available for download on ${os.name}.`,
+          null,
+          null,
+          'https://plingifyplug.com/VintiRequirements'
+        );
+      }
+      vintiContainer.appendChild(card);
+    })();
 
-    content.appendChild(actions);
-    card.appendChild(icon);
-    card.appendChild(content);
-    card.appendChild(closeButtonContainer);
-    return card;
-}
+    // Hub download logic
+    const hubContainer = document.getElementById('hub-download');
+    (function renderHub(){
+      let card;
+      if (os.id === 'windows') {
+        const link = 'https://github.com/BackupPASS/PlingifyPlug-Hub/releases/download/v.0.0.70/PlingifyPlug-Hub-0.0.70.exe';
+        card = createDownloadCard(
+          'Windows Users',
+          'PlingifyPlug Hub is available for Windows 10+. You will be taken to the Hub download page.',
+          link,
+          'Open Hub Download Page'
+        );
+      } else {
+        card = createDownloadCard(
+          os.name + ' Users',
+          `PlingifyPlug Hub isn’t available on ${os.name}. You can still use Vinti where supported.`,
+          null,
+          null,
+          'https://plingifyplug.com/VintiRequirements'
+        );
+      }
+      hubContainer.appendChild(card);
+    })();
 
-function showPlatformNotification() {
-    const userAgent = navigator.userAgent;
-    let notification = null;
-    let downloadLink = '';
-    let downloadButtonText = '';
-
-    if (userAgent.indexOf('Windows') !== -1) {
-        downloadLink = 'https://github.com/BackupPASS/Downloads-Vinti/releases/download/V2.50.82/Vinti_Setup_2.50.82.exe';
-        downloadButtonText = 'Download Vinti';
-        notification = createNotificationCard('windows', 'Windows Users', 'Vinti Windows 10+', downloadLink, 'https://plingifyplug.com/VintiRequirements', downloadButtonText);
-    } else if (userAgent.indexOf('Mac') !== -1 && userAgent.indexOf('iPhone') === -1) {
-        downloadLink = 'https://github.com/BackupPASS/Downloads/raw/refs/heads/main/Vinti%20MacOS.app.zip';
-        downloadButtonText = 'Download Vinti'; 
-        notification = createNotificationCard('mac', 'Mac Users', 'Vinti MacOS BigSur 11.7+', downloadLink, 'https://plingifyplug.com/VintiRequirements', downloadButtonText);
-     } else if (userAgent.indexOf('iPhone') !== -1) {
-        notification = createNotificationCard('iphone', 'iPhone Users', 'This software is not available for download on iPhone.', null, 'https://plingifyplug.com/VintiRequirements');
-    } else if (userAgent.indexOf('Android') !== -1) {
-        notification = createNotificationCard('android', 'Android Users', 'This software is not available for download on Android.', null, 'https://plingifyplug.com/VintiRequirements');
-    } else if (userAgent.indexOf('CrOS') !== -1) {
-        notification = createNotificationCard('chromebook', 'Chromebook Users', 'This software is not available for download on Chromebooks, Including ChromeOS Linux.', null, 'https://plingifyplug.com/VintiRequirements');
-    } else if (userAgent.indexOf('Linux') !== -1 && userAgent.indexOf('Android') === -1) {
-        downloadLink = 'https://github.com/BackupPASS/Downloads-Vinti/releases/download/V2.50.82/Vinti.Setup.Linux.zip';
-        downloadButtonText = 'Download Vinti For Linux'; 
-        notification = createNotificationCard('linux', 'Linux Users', 'Vinti Linux All Distributions', downloadLink, 'https://plingifyplug.com/VintiRequirements', downloadButtonText);
-    } else {
-        notification = createNotificationCard('unknown', 'Unsupported Device', 'This software is not available on your device.', null, null);
+    // Cookie logic
+    function hasAcceptedCookies() {
+      return document.cookie.split(";").some((item) =>
+        item.trim().startsWith("cookieAccepted=")
+      );
     }
 
-    notificationContainer.appendChild(notification);
-    notification.classList.add('card-show');
-
-    if (downloadLink !== "") {
-        downloadBtn = document.querySelector(`#${userAgent.indexOf('Mac') !== -1 ? 'mac' : 'windows'}-notification .download`);
-        downloadBtn.addEventListener('click', function(event) {
-            event.preventDefault();
-            window.location.href = downloadLink;
-        });
+    function showCookieNotice() {
+      if (!hasAcceptedCookies()) {
+        document.getElementById("cookie-card").style.display = "block";
+      }
     }
-}
 
-showPlatformNotification();
-
-setTimeout(function () {
-    showCookieNotice();
-}, 1000);
-
-function hasAcceptedCookies() {
-    return document.cookie.split(';').some((item) => item.trim().startsWith('cookieAccepted='));
-}
-
-function showCookieNotice() {
-    if (!hasAcceptedCookies()) {
-        document.getElementById('cookie-card').style.display = 'block';
+    function acceptCookies() {
+      document.getElementById("cookie-card").style.display = "none";
+      document.cookie = "cookieAccepted=true; max-age=31536000; path=/";
     }
-}
 
-function acceptCookies() {
-    document.getElementById('cookie-card').style.display = 'none';
-    document.cookie = 'cookieAccepted=true; max-age=31536000';
-}
-
-document.getElementById('accept-cookies').addEventListener('click', acceptCookies);
-
-setTimeout(showCookieNotice, 1000);
-
-document.cookie = "username=JohnDoe; path=/; secure; HttpOnly";
+    document.getElementById("accept-cookies").addEventListener("click", acceptCookies);
+    setTimeout(showCookieNotice, 1000);
