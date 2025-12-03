@@ -30,7 +30,7 @@
       if (ua.indexOf('Android') !== -1) return {id:'android', name:'Android'};
       if (ua.indexOf('CrOS') !== -1) return {id:'chromeos', name:'ChromeOS'};
       if (ua.indexOf('Linux') !== -1 && ua.indexOf('Android') === -1) return {id:'linux', name:'Linux'};
-      return {id:'unknown', name:'your device'};
+      return {id:'unknown', name:'Your device'};
     }
 
     function createDownloadCard(title, desc, downloadLink, downloadLabel, extraLink){
@@ -90,7 +90,7 @@
     (function renderVinti(){
       let card;
       if (os.id === 'windows') {
-        const link = 'https://github.com/BackupPASS/Downloads-Vinti/releases/download/V2.50.90/Vinti_Setup_2.50.90.exe';
+        const link = 'https://github.com/BackupPASS/Downloads-Vinti/releases/download/V2.50.95/Vinti_Setup_2.50.95.exe';
         card = createDownloadCard(
           'Windows Users',
           'Vinti for Windows 10+. Click download to get the latest installer.',
@@ -116,7 +116,7 @@
       } else {
         // iPhone / Android / ChromeOS / unknown
         card = createDownloadCard(
-          os.name + ' Users',
+          os.name + ' is not supported.',
           `This software is not available for download on ${os.name}.`,
           null,
           null,
@@ -140,7 +140,7 @@
         );
       } else {
         card = createDownloadCard(
-          os.name + ' Users',
+          os.name + ' is not supported.',
           `PlingifyPlug Hub isn’t available on ${os.name}. You can still use Vinti where supported.`,
           null,
           null,
