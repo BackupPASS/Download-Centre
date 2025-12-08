@@ -82,19 +82,23 @@ function createDownloadCard(title, desc, downloadLink, downloadLabel, extraLink)
   return card;
 }
 
-function handleWindowsBetaClick() {
+async function handleWindowsBetaClick() {
   if (!window.firebase || !firebase.auth) {
     alert('Beta access is not available right now (auth not initialised).');
     return;
   }
 
-  const email = prompt('Enter beta access email:');
+  const promptFn = window.vintiPrompt
+    ? (msg, def) => window.vintiPrompt(msg, def)
+    : (msg, def) => Promise.resolve(prompt(msg, def));
+
+  const email = await promptFn('Enter beta access email:', '');
   if (!email) {
     alert('Beta download cancelled.');
     return;
   }
-
-  const password = prompt('Enter beta access password:');
+  
+ const password = await promptFn('Enter beta access password:', '');
   if (!password) {
     alert('Beta download cancelled.');
     return;
