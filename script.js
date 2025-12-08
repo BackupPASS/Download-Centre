@@ -30,7 +30,7 @@
       if (ua.indexOf('Android') !== -1) return {id:'android', name:'Android'};
       if (ua.indexOf('CrOS') !== -1) return {id:'chromeos', name:'ChromeOS'};
       if (ua.indexOf('Linux') !== -1 && ua.indexOf('Android') === -1) return {id:'linux', name:'Linux'};
-      return {id:'unknown', name:'Your device'};
+      return {id:'unknown', name:'your device'};
     }
 
     function createDownloadCard(title, desc, downloadLink, downloadLabel, extraLink){
@@ -83,17 +83,16 @@
       return card;
     }
 
-    // Vinti download logic (same responses as before)
     const vintiContainer = document.getElementById('vinti-download');
     const os = getOSInfo();
 
     (function renderVinti(){
       let card;
       if (os.id === 'windows') {
-        const link = 'https://github.com/BackupPASS/Downloads-Vinti/releases/download/V2.60.0/Vinti_Setup_2.60.0.exe';
+        const link = 'https://github.com/BackupPASS/Downloads-Vinti/releases/download/V2.50.90/Vinti_Setup_2.50.90.exe';
         card = createDownloadCard(
           'Windows Users',
-          'Vinti for Windows 10+. Click download to get the latest installer.',
+          'Vinti for Windows. Click download to get the latest installer.',
           link,
           'Download Vinti for Windows'
         );
@@ -114,9 +113,8 @@
           'Download Vinti for Linux'
         );
       } else {
-        // iPhone / Android / ChromeOS / unknown
         card = createDownloadCard(
-          os.name + ' is not supported.',
+          os.name + ' Users',
           `This software is not available for download on ${os.name}.`,
           null,
           null,
@@ -126,7 +124,6 @@
       vintiContainer.appendChild(card);
     })();
 
-    // Hub download logic
     const hubContainer = document.getElementById('hub-download');
     (function renderHub(){
       let card;
@@ -134,13 +131,13 @@
         const link = 'https://github.com/BackupPASS/PlingifyPlug-Hub/releases/download/v.0.0.70/PlingifyPlug-Hub-0.0.70.exe';
         card = createDownloadCard(
           'Windows Users',
-          'PlingifyPlug Hub is available for Windows 10+. You will be taken to the Hub download page.',
+          'PlingifyPlug Hub is available for Windows. You will be taken to the Hub download page.',
           link,
-          'Download'
+          'Open Hub Download Page'
         );
       } else {
         card = createDownloadCard(
-          os.name + ' is not supported.',
+          os.name + ' Users',
           `PlingifyPlug Hub isn’t available on ${os.name}. You can still use Vinti where supported.`,
           null,
           null,
@@ -150,7 +147,6 @@
       hubContainer.appendChild(card);
     })();
 
-    // Cookie logic
     function hasAcceptedCookies() {
       return document.cookie.split(";").some((item) =>
         item.trim().startsWith("cookieAccepted=")
@@ -170,3 +166,99 @@
 
     document.getElementById("accept-cookies").addEventListener("click", acceptCookies);
     setTimeout(showCookieNotice, 1000);
+
+document.addEventListener('DOMContentLoaded', () => {
+  const statusEl = document.getElementById('vinti-status-pill');
+  if (!statusEl) return;
+
+  updateVintiStatusPill(statusEl);
+});
+
+async function updateVintiStatusPill(statusEl) {
+  statusEl.classList.remove('ok', 'warn', 'danger');
+  statusEl.textContent = 'Checking status…';
+
+  try {
+    const res = await fetch('https://backuppass.github.io/Status-Centre/');
+    if (!res.ok) throw new Error('Status Centre request failed');
+
+    const html = await res.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    const vintiCard = Array.from(doc.querySelectorAll('.card')).find(card => {
+      const h2 = card.querySelector('h2');
+      return h2 && h2.textContent.trim().toLowerCase() === 'vinti';
+    });
+
+    if (!vintiCard) {
+      setUnknownStatus(statusEl, 'Vinti status not found');
+      return;
+    }
+
+    const windowsStack = Array.from(vintiCard.querySelectorAll('.stack')).find(stack => {
+      const h3 = stack.querySelector('h3');
+      return h3 && h3.textContent.toLowerCase().includes('windows');
+    });
+
+    if (!windowsStack) {
+      setUnknownStatus(statusEl, 'Windows status not found');
+      return;
+    }
+
+    const tagline = windowsStack.querySelector('.tagline');
+    if (!tagline) {
+      setUnknownStatus(statusEl, 'No reason text');
+      return;
+    }
+
+    const text = tagline.textContent.toLowerCase();
+
+    let status = 'unknown';
+    if (text.includes('online')) {
+      status = 'online';
+    } else if (text.includes('downtime')) {
+      status = 'downtime';
+    } else if (text.includes('offline')) {
+      status = 'offline';
+    } else if (text.includes('error')) {
+      status = 'error';
+    }
+
+    applyStatusToPill(statusEl, status);
+  } catch (err) {
+    console.error('Failed to fetch Vinti status:', err);
+    setUnknownStatus(statusEl, 'Error fetching status');
+  }
+}
+
+function applyStatusToPill(el, status) {
+  el.classList.remove('ok', 'warn', 'danger');
+
+  switch (status) {
+    case 'online':
+      el.classList.add('ok');
+      el.textContent = 'Online';
+      break;
+
+    case 'downtime':
+      el.classList.add('warn');
+      el.textContent = 'Downtime';
+      break;
+
+    case 'offline':
+    case 'error':
+      el.classList.add('danger');
+      el.textContent = status === 'offline' ? 'Offline' : 'Error';
+      break;
+
+    default:
+      setUnknownStatus(el, 'Unknown');
+      break;
+  }
+}
+
+function setUnknownStatus(el, label) {
+  el.classList.remove('ok', 'warn', 'danger');
+  el.textContent = label || 'Unknown';
+}
