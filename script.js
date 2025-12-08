@@ -90,15 +90,15 @@ async function handleWindowsBetaClick() {
 
   const promptFn = window.vintiPrompt
     ? (msg, def) => window.vintiPrompt(msg, def)
-    : (msg, def) => Promise.resolve(prompt(msg, def));
+    : (msg, def) => Promise.resolve(window.prompt(msg, def));
 
   const email = await promptFn('Enter beta access email:', '');
   if (!email) {
     alert('Beta download cancelled.');
     return;
   }
-  
- const password = await promptFn('Enter beta access password:', '');
+
+  const password = await promptFn('Enter beta access password:', '');
   if (!password) {
     alert('Beta download cancelled.');
     return;
