@@ -210,6 +210,7 @@ function acceptCookies() {
 document.getElementById("accept-cookies").addEventListener("click", acceptCookies);
 setTimeout(showCookieNotice, 1000);
 
+
 document.addEventListener('DOMContentLoaded', () => {
   const statusEl = document.getElementById('vinti-status-pill');
   if (!statusEl) return;
@@ -223,13 +224,15 @@ async function updateVintiStatusPill(statusEl) {
 
   try {
     const res = await fetch('https://backuppass.github.io/Status-Centre/');
-    if (!res.ok) throw new Error('Status Centre request failed');
+    if (!res.ok) {
+      throw new Error('Status Centre request failed with ' + res.status);
+    }
 
     const html = await res.text();
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
 
-    // 1) Find the "GitHub Pages & Repos" -> "GitHub" card
+    // 1) Find "GitHub Pages & Repos" -> "GitHub" card
     const githubCard = Array.from(doc.querySelectorAll('.card')).find(card => {
       const sectionTitle = card.querySelector('.section-title');
       const h2 = card.querySelector('h2');
@@ -242,6 +245,7 @@ async function updateVintiStatusPill(statusEl) {
     });
 
     if (!githubCard) {
+      console.warn('Status Centre: GitHub card not found');
       setUnknownStatus(statusEl, 'GitHub status not found');
       return;
     }
@@ -252,11 +256,13 @@ async function updateVintiStatusPill(statusEl) {
     );
 
     if (!downloadLi) {
+      console.warn('Status Centre: /Download-Centre line not found');
       setUnknownStatus(statusEl, 'Download-Centre entry not found');
       return;
     }
 
     const line = downloadLi.textContent.toLowerCase();
+    console.log('Download-Centre status line:', line);
 
     let status = 'unknown';
     if (line.includes('online')) {
@@ -310,4 +316,3 @@ function setUnknownStatus(el, label) {
   el.classList.remove('ok', 'warn', 'danger');
   el.textContent = label || 'Unknown';
 }
-
