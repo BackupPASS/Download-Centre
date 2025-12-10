@@ -229,7 +229,7 @@ async function updateVintiStatusPill(statusEl) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
 
-    // --- 1) Find GitHub Pages & Repos -> GitHub card -----------------------
+    // 1) Find the "GitHub Pages & Repos" -> "GitHub" card
     const githubCard = Array.from(doc.querySelectorAll('.card')).find(card => {
       const sectionTitle = card.querySelector('.section-title');
       const h2 = card.querySelector('h2');
@@ -246,7 +246,7 @@ async function updateVintiStatusPill(statusEl) {
       return;
     }
 
-    // --- 2) Find the <li> that refers to /Download-Centre ------------------
+    // 2) Find the <li> that refers to /Download-Centre
     const downloadLi = Array.from(githubCard.querySelectorAll('li')).find(li =>
       li.textContent.toLowerCase().includes('/download-centre')
     );
@@ -276,49 +276,33 @@ async function updateVintiStatusPill(statusEl) {
   }
 }
 
-    const vintiCard = Array.from(doc.querySelectorAll('.card')).find(card => {
-      const h2 = card.querySelector('h2');
-      return h2 && h2.textContent.trim().toLowerCase() === 'vinti';
-    });
+function applyStatusToPill(el, status) {
+  el.classList.remove('ok', 'warn', 'danger');
 
-    if (!vintiCard) {
-      setUnknownStatus(statusEl, 'Vinti status not found');
-      return;
-    }
+  switch (status) {
+    case 'online':
+      el.classList.add('ok');
+      el.textContent = 'Online';
+      break;
 
-    const windowsStack = Array.from(vintiCard.querySelectorAll('.stack')).find(stack => {
-      const h3 = stack.querySelector('h3');
-      return h3 && h3.textContent.toLowerCase().includes('windows');
-    });
+    case 'downtime':
+      el.classList.add('warn');
+      el.textContent = 'Downtime';
+      break;
 
-    if (!windowsStack) {
-      setUnknownStatus(statusEl, 'Windows status not found');
-      return;
-    }
+    case 'offline':
+      el.classList.add('danger');
+      el.textContent = 'Offline';
+      break;
 
-    const tagline = windowsStack.querySelector('.tagline');
-    if (!tagline) {
-      setUnknownStatus(statusEl, 'No reason text');
-      return;
-    }
+    case 'error':
+      el.classList.add('danger');
+      el.textContent = 'Error';
+      break;
 
-    const text = tagline.textContent.toLowerCase();
-
-    let status = 'unknown';
-    if (text.includes('online')) {
-      status = 'online';
-    } else if (text.includes('downtime')) {
-      status = 'downtime';
-    } else if (text.includes('offline')) {
-      status = 'offline';
-    } else if (text.includes('error')) {
-      status = 'error';
-    }
-
-    applyStatusToPill(statusEl, status);
-  } catch (err) {
-    console.error('Failed to fetch Vinti status:', err);
-    setUnknownStatus(statusEl, 'Error fetching status');
+    default:
+      setUnknownStatus(el, 'Unknown');
+      break;
   }
 }
 
@@ -326,3 +310,4 @@ function setUnknownStatus(el, label) {
   el.classList.remove('ok', 'warn', 'danger');
   el.textContent = label || 'Unknown';
 }
+
