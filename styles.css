@@ -245,10 +245,6 @@
 
     }
     
-#vinti-status-pill {
-  text-transform: uppercase;
-}
-
     .download-card{
       display:flex;
       align-items:flex-start;
