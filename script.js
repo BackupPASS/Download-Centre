@@ -229,6 +229,42 @@ async function updateVintiStatusPill(statusEl) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
 
+    // --- 1) Try: PlingifyPlug Core Systems -> Vinti Updater -----------------
+    const coreCard = Array.from(doc.querySelectorAll('.card')).find(card => {
+      const sectionTitle = card.querySelector('.section-title');
+      return sectionTitle &&
+             sectionTitle.textContent.trim().toLowerCase() === 'plingifyplug core systems';
+    });
+
+    if (coreCard) {
+      const updaterItem = Array.from(coreCard.querySelectorAll('li')).find(li => {
+        const strong = li.querySelector('strong');
+        return strong && strong.textContent.toLowerCase().includes('vinti updater');
+      });
+
+      if (updaterItem) {
+        const hintSpan = updaterItem.querySelector('.hint');
+        if (hintSpan) {
+          const text = hintSpan.textContent.toLowerCase();
+
+          let status = 'unknown';
+          if (text.includes('online')) {
+            status = 'online';
+          } else if (text.includes('downtime')) {
+            status = 'downtime';
+          } else if (text.includes('offline')) {
+            status = 'offline';
+          } else if (text.includes('error')) {
+            status = 'error';
+          }
+
+          applyStatusToPill(statusEl, status);
+          return; // ✅ we got a status from Vinti Updater, stop here
+        }
+      }
+    }
+
+    // --- 2) Fallback: old Vinti Windows status logic ------------------------
     const vintiCard = Array.from(doc.querySelectorAll('.card')).find(card => {
       const h2 = card.querySelector('h2');
       return h2 && h2.textContent.trim().toLowerCase() === 'vinti';
@@ -272,32 +308,6 @@ async function updateVintiStatusPill(statusEl) {
   } catch (err) {
     console.error('Failed to fetch Vinti status:', err);
     setUnknownStatus(statusEl, 'Error fetching status');
-  }
-}
-
-function applyStatusToPill(el, status) {
-  el.classList.remove('ok', 'warn', 'danger');
-
-  switch (status) {
-    case 'online':
-      el.classList.add('ok');
-      el.textContent = 'Online';
-      break;
-
-    case 'downtime':
-      el.classList.add('warn');
-      el.textContent = 'Downtime';
-      break;
-
-    case 'offline':
-    case 'error':
-      el.classList.add('danger');
-      el.textContent = status === 'offline' ? 'Offline' : 'Error';
-      break;
-
-    default:
-      setUnknownStatus(el, 'Unknown');
-      break;
   }
 }
 
