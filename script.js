@@ -229,42 +229,53 @@ async function updateVintiStatusPill(statusEl) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
 
-    // --- 1) Try: PlingifyPlug Core Systems -> Vinti Updater -----------------
-    const coreCard = Array.from(doc.querySelectorAll('.card')).find(card => {
+    // --- 1) Find GitHub Pages & Repos -> GitHub card -----------------------
+    const githubCard = Array.from(doc.querySelectorAll('.card')).find(card => {
       const sectionTitle = card.querySelector('.section-title');
-      return sectionTitle &&
-             sectionTitle.textContent.trim().toLowerCase() === 'plingifyplug core systems';
+      const h2 = card.querySelector('h2');
+      return (
+        sectionTitle &&
+        h2 &&
+        sectionTitle.textContent.trim().toLowerCase() === 'github pages & repos' &&
+        h2.textContent.trim().toLowerCase() === 'github'
+      );
     });
 
-    if (coreCard) {
-      const updaterItem = Array.from(coreCard.querySelectorAll('li')).find(li => {
-        const strong = li.querySelector('strong');
-        return strong && strong.textContent.toLowerCase().includes('vinti updater');
-      });
-
-      if (updaterItem) {
-        const hintSpan = updaterItem.querySelector('.hint');
-        if (hintSpan) {
-          const text = hintSpan.textContent.toLowerCase();
-
-          let status = 'unknown';
-          if (text.includes('online')) {
-            status = 'online';
-          } else if (text.includes('downtime')) {
-            status = 'downtime';
-          } else if (text.includes('offline')) {
-            status = 'offline';
-          } else if (text.includes('error')) {
-            status = 'error';
-          }
-
-          applyStatusToPill(statusEl, status);
-          return; // ✅ we got a status from Vinti Updater, stop here
-        }
-      }
+    if (!githubCard) {
+      setUnknownStatus(statusEl, 'GitHub status not found');
+      return;
     }
 
-    // --- 2) Fallback: old Vinti Windows status logic ------------------------
+    // --- 2) Find the <li> that refers to /Download-Centre ------------------
+    const downloadLi = Array.from(githubCard.querySelectorAll('li')).find(li =>
+      li.textContent.toLowerCase().includes('/download-centre')
+    );
+
+    if (!downloadLi) {
+      setUnknownStatus(statusEl, 'Download-Centre entry not found');
+      return;
+    }
+
+    const line = downloadLi.textContent.toLowerCase();
+
+    let status = 'unknown';
+    if (line.includes('online')) {
+      status = 'online';
+    } else if (line.includes('downtime')) {
+      status = 'downtime';
+    } else if (line.includes('offline')) {
+      status = 'offline';
+    } else if (line.includes('error')) {
+      status = 'error';
+    }
+
+    applyStatusToPill(statusEl, status);
+  } catch (err) {
+    console.error('Failed to fetch Vinti status:', err);
+    setUnknownStatus(statusEl, 'Error fetching status');
+  }
+}
+
     const vintiCard = Array.from(doc.querySelectorAll('.card')).find(card => {
       const h2 = card.querySelector('h2');
       return h2 && h2.textContent.trim().toLowerCase() === 'vinti';
