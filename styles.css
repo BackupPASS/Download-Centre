@@ -49,7 +49,6 @@
       align-items:flex-start;
     }
 
-    /* Sidebar */
     .sidebar{
       position:sticky; top:22px;
       background: var(--glass);
@@ -246,8 +245,10 @@
 
     }
     
+#vinti-status-pill {
+  text-transform: uppercase;
+}
 
-    /* Download detection card */
     .download-card{
       display:flex;
       align-items:flex-start;
