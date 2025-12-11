@@ -140,10 +140,10 @@ const os = getOSInfo();
     }
 
   } else if (os.id === 'mac') {
-    const link = 'https://github.com/BackupPASS/Download-Centre/releases/download/V2.70.15/Vinti-2.70.20.dmg';
+    const link = 'https://github.com/BackupPASS/Download-Centre/releases/download/V2.70.15/Vinti-2.70.25.dmg';
     card = createDownloadCard(
       'macOS Users',
-      'Vinti for macOS Big Sur 11.7+. Download the .app bundle and follow the instructions.',
+      'Vinti for MacOS. Download the .app bundle and follow the instructions.',
       link,
       'Download Vinti for macOS'
     );
