@@ -151,7 +151,7 @@ const os = getOSInfo();
 (function renderVinti() {
   let card;
   if (os.id === 'windows') {
-    const link = 'https://github.com/BackupPASS/Download-Centre/releases/download/V2.70.15/Vinti_Setup_2.70.15.exe';
+    const link = 'https://github.com/BackupPASS/Download-Centre/releases/download/V2.70.20/Vinti_Setup_2.70.20.exe';
     card = createDownloadCard(
       'Windows Users',
       'Vinti for Windows. Click download to get the latest installer.',
@@ -206,7 +206,7 @@ const hubContainer = document.getElementById('hub-download');
       'Windows Users',
       'PlingifyPlug Hub is available for Windows. You will be taken to the Hub download page.',
       link,
-      'Open Hub Download Page'
+      'Download PlingifyPlug-Hub'
     );
   } else {
     card = createDownloadCard(
