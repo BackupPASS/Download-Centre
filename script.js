@@ -232,50 +232,52 @@ async function updateVintiStatusPill(statusEl) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
 
-    // 1) Find "GitHub Pages & Repos" -> "GitHub" card
-    const githubCard = Array.from(doc.querySelectorAll('.card')).find(card => {
-      const sectionTitle = card.querySelector('.section-title');
-      const h2 = card.querySelector('h2');
-      return (
-        sectionTitle &&
-        h2 &&
-        sectionTitle.textContent.trim().toLowerCase() === 'github pages & repos' &&
-        h2.textContent.trim().toLowerCase() === 'github'
-      );
-    });
+   const coreCard = Array.from(doc.querySelectorAll('.card')).find(card => {
+  const sectionTitle = card.querySelector('.section-title');
+  const h2 = card.querySelector('h2');
+  return (
+    sectionTitle &&
+    h2 &&
+    sectionTitle.textContent.trim().toLowerCase() === 'plingifyplug core systems' &&
+    h2.textContent.trim().toLowerCase() === 'plingifyplug'
+  );
+});
 
-    if (!githubCard) {
-      console.warn('Status Centre: GitHub card not found');
-      setUnknownStatus(statusEl, 'GitHub status not found');
-      return;
-    }
+if (!coreCard) {
+  console.warn('Status Centre: PlingifyPlug Core Systems card not found');
+  setUnknownStatus(statusEl, 'Status not found');
+  return;
+}
 
-    // 2) Find the <li> that refers to /Download-Centre
-    const downloadLi = Array.from(githubCard.querySelectorAll('li')).find(li =>
-      li.textContent.toLowerCase().includes('/download-centre')
-    );
+const downloadLi = Array.from(coreCard.querySelectorAll('li')).find(li => {
+  const strong = li.querySelector('strong');
+  return strong && strong.textContent.trim().toLowerCase() === 'download system';
+});
 
-    if (!downloadLi) {
-      console.warn('Status Centre: /Download-Centre line not found');
-      setUnknownStatus(statusEl, 'Download-Centre entry not found');
-      return;
-    }
+if (!downloadLi) {
+  console.warn('Status Centre: "Download System" line not found');
+  setUnknownStatus(statusEl, 'Download System not found');
+  return;
+}
 
-    const line = downloadLi.textContent.toLowerCase();
-    console.log('Download-Centre status line:', line);
+const hintEl = downloadLi.querySelector('.hint');
+const lineRaw = (hintEl ? hintEl.textContent : downloadLi.textContent) || '';
+const line = lineRaw.trim().toLowerCase();
 
-    let status = 'unknown';
-    if (line.includes('online')) {
-      status = 'online';
-    } else if (line.includes('downtime')) {
-      status = 'downtime';
-    } else if (line.includes('offline')) {
-      status = 'offline';
-    } else if (line.includes('error')) {
-      status = 'error';
-    }
+console.log('Download System status line:', line);
 
-    applyStatusToPill(statusEl, status);
+let status = 'unknown';
+if (line.includes('online')) {
+  status = 'online';
+} else if (line.includes('downtime')) {
+  status = 'downtime';
+} else if (line.includes('offline')) {
+  status = 'offline';
+} else if (line.includes('error')) {
+  status = 'error';
+}
+
+applyStatusToPill(statusEl, status);
   } catch (err) {
     console.error('Failed to fetch Vinti status:', err);
     setUnknownStatus(statusEl, 'Error fetching status');
