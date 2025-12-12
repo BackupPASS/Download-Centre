@@ -3,6 +3,26 @@ const sections = document.querySelectorAll('.section');
 const pageTitle = document.getElementById('page-title');
 const headerSub = document.getElementById('header-sub');
 
+let downloadSystemStatus = 'unknown'; // 'online' | 'downtime' | 'offline' | 'error' | 'unknown'
+
+function isDownloadSystemOffline() {
+  return String(downloadSystemStatus).toLowerCase() === 'offline';
+}
+
+function showDownloadBlockedAlert() {
+  alert('Unable to Download\n\nError connecting to system.');
+}
+
+function guardDownloadClick(e) {
+  if (!isDownloadSystemOffline()) return;
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  showDownloadBlockedAlert();
+  return false;
+}
+
 navButtons.forEach(btn => {
   btn.addEventListener('click', () => {
     const target = btn.getAttribute('data-target');
@@ -58,13 +78,17 @@ function createDownloadCard(title, desc, downloadLink, downloadLabel, extraLink)
   const actions = document.createElement('div');
   actions.className = 'download-actions';
 
-  if (downloadLink) {
-    const a = document.createElement('a');
-    a.href = downloadLink;
-    a.className = 'btn-small primary';
-    a.textContent = downloadLabel || 'Download';
-    actions.appendChild(a);
-  }
+if (downloadLink) {
+  const a = document.createElement('a');
+  a.href = downloadLink;
+  a.className = 'btn-small primary';
+  a.textContent = downloadLabel || 'Download';
+
+  a.addEventListener('click', guardDownloadClick);
+
+  actions.appendChild(a);
+}
+
 
   if (extraLink) {
     const b = document.createElement('a');
@@ -83,6 +107,12 @@ function createDownloadCard(title, desc, downloadLink, downloadLabel, extraLink)
 }
 
 async function handleWindowsBetaClick() {
+
+  if (isDownloadSystemOffline()) {
+    showDownloadBlockedAlert();
+    return;
+  }
+
   if (!window.firebase || !firebase.auth) {
     alert('Beta access is not available right now (auth not initialised).');
     return;
@@ -276,6 +306,8 @@ if (line.includes('online')) {
 } else if (line.includes('error')) {
   status = 'error';
 }
+
+downloadSystemStatus = status;
 
 applyStatusToPill(statusEl, status);
   } catch (err) {
