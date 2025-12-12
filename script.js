@@ -242,10 +242,11 @@ setTimeout(showCookieNotice, 1000);
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  const statusEl = document.getElementById('vinti-status-pill');
-  if (!statusEl) return;
+  const vintiPill = document.getElementById('vinti-status-pill');
+  if (vintiPill) updateVintiStatusPill(vintiPill);
 
-  updateVintiStatusPill(statusEl);
+  const hubPill = document.getElementById('hub-status-pill');
+  if (hubPill) updateVintiStatusPill(hubPill); 
 });
 
 async function updateVintiStatusPill(statusEl) {
