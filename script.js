@@ -10,7 +10,7 @@ function isDownloadSystemOffline() {
 }
 
 function showDownloadBlockedAlert() {
-  alert('Unable to Download\n\nError connecting to system.');
+  alert('Unable to Download.\n\nThere was an error connecting to the download system.');
 }
 
 function guardDownloadClick(e) {
