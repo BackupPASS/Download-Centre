@@ -190,8 +190,7 @@ const os = getOSInfo();
       os.name + ' Users',
       `This software is not available for download on ${os.name}.`,
       null,
-      null,
-      'https://plingifyplug.com/VintiRequirements'
+      null
     );
   }
   vintiContainer.appendChild(card);
@@ -213,8 +212,7 @@ const hubContainer = document.getElementById('hub-download');
       os.name + ' Users',
       `PlingifyPlug Hub isn’t available on ${os.name}. You can still use Vinti where supported.`,
       null,
-      null,
-      'https://plingifyplug.com/VintiRequirements'
+      null
     );
   }
   hubContainer.appendChild(card);
