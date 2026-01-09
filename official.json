@@ -1,16 +1,3 @@
 {
-  "schema": 1,
-  "app": "Vinti",
-  "targets": [
-    {
-      "platform": "win32",
-      "arch": "x64",
-      "asarSha256": "3FC229ABF7FF8CE4D4CF0F13D0E234D7576B1C183074AA1C0AD8657542CBB794"
-    },
-    {
-      "platform": "win32",
-      "arch": "x64",
-      "asarSha256": "PUT_NEW_ASAR_SHA256_HERE"
-    }
-  ]
+  "auth": "OfficialVersion2025"
 }
