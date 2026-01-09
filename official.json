@@ -5,7 +5,12 @@
     {
       "platform": "win32",
       "arch": "x64",
-      "asarSha256": "CA29A5CC6E307925C06B4B61C0C6E2B7AA014B4A24874F6917A2BEF15922A111"
+      "asarSha256": "CB652619D6143F7E88FEC15E07AE4378473270A5ADFD761944465BD8AD2EA841"
+    },
+    {
+      "platform": "win32",
+      "arch": "x64",
+      "asarSha256": "PUT_NEW_ASAR_SHA256_HERE"
     }
   ]
 }
