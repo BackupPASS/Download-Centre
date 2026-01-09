@@ -200,7 +200,7 @@ const hubContainer = document.getElementById('hub-download');
 (function renderHub() {
   let card;
   if (os.id === 'windows') {
-    const link = 'https://github.com/BackupPASS/PlingifyPlug-Hub/releases/download/v.0.0.70/PlingifyPlug-Hub-0.0.70.exe';
+    const link = 'https://github.com/BackupPASS/PlingifyPlug-Hub/releases/download/V1.0.25/PlingifyPlug-Hub-Setup-1.0.25.exe';
     card = createDownloadCard(
       'Windows Users',
       'PlingifyPlug Hub is available for Windows. You will be taken to the Hub download page.',
