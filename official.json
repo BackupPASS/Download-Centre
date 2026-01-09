@@ -1,3 +1,11 @@
 {
-    "authCode": "OfficialVersion2025"
+  "schema": 1,
+  "app": "Vinti",
+  "targets": [
+    {
+      "platform": "win32",
+      "arch": "x64",
+      "asarSha256": "CA29A5CC6E307925C06B4B61C0C6E2B7AA014B4A24874F6917A2BEF15922A111"
+    }
+  ]
 }
