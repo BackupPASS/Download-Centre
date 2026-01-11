@@ -151,7 +151,7 @@ const os = getOSInfo();
 (function renderVinti() {
   let card;
   if (os.id === 'windows') {
-    const link = 'https://github.com/BackupPASS/Download-Centre/releases/download/V2.70.81/Vinti-2.70.81-setup.exe';
+    const link = 'https://github.com/BackupPASS/Download-Centre/releases/download/V2.70.85/Vinti-2.70.85-setup.exe';
     card = createDownloadCard(
       'Windows Users',
       'Vinti for Windows. Click download to get the latest installer.',
