@@ -81,7 +81,7 @@ function createDownloadCard(title, desc, downloadLink, downloadLabel, extraLink)
 if (downloadLink) {
   const a = document.createElement('a');
   a.href = downloadLink;
-  a.className = 'btn-small primary';
+  a.className = 'btn primary';
   a.textContent = downloadLabel || 'Download';
 
   a.addEventListener('click', guardDownloadClick);
@@ -163,7 +163,7 @@ const os = getOSInfo();
     if (actions) {
       const betaBtn = document.createElement('button');
       betaBtn.type = 'button';
-      betaBtn.className = 'btn-small primary';
+      betaBtn.className = 'btn primary';
       betaBtn.textContent = 'Download Vinti BETA for Windows';
       betaBtn.addEventListener('click', handleWindowsBetaClick);
       actions.appendChild(betaBtn);
