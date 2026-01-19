@@ -93,7 +93,7 @@ if (downloadLink) {
   if (extraLink) {
     const b = document.createElement('a');
     b.href = extraLink;
-    b.className = 'btn-small';
+    b.className = 'btn';
     b.textContent = 'View requirements';
     actions.appendChild(b);
   }
