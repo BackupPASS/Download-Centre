@@ -136,7 +136,7 @@ async function handleWindowsBetaClick() {
 
   firebase.auth().signInWithEmailAndPassword(email, password)
     .then(() => {
-      const betaUrl = 'https://github.com/BackupPASS/Download-Centre/releases/download/V3.0.10/Vinti-3.0.10-setup.exe';
+      const betaUrl = 'https://github.com/BackupPASS/Download-Centre/releases/download/V3.1.0/Vinti-3.1.0-setup.exe';
       window.location.href = betaUrl;
     })
     .catch((err) => {
@@ -151,7 +151,7 @@ const os = getOSInfo();
 (function renderVinti() {
   let card;
   if (os.id === 'windows') {
-    const link = 'https://github.com/BackupPASS/Download-Centre/releases/download/V3.0.10/Vinti-3.0.10-setup.exe';
+    const link = 'https://github.com/BackupPASS/Download-Centre/releases/download/V3.1.0/Vinti-3.1.0-setup.exe';
     card = createDownloadCard(
       'Windows Users',
       'Vinti for Windows. Click download to get the latest installer.',
