@@ -4,7 +4,7 @@
       "id": "calculator",
       "name": "Calculator",
       "version": "1.0.0",
-      "minVintiVersion": "3.0.0",
+      "minVintiVersion": "3.1.80",
       "download": "https://raw.githubusercontent.com/BackupPASS/Download-Centre/main/extensions/calculator/calculator-extension.zip"
     }
   ]
