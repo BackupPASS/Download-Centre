@@ -26,18 +26,30 @@ function guardDownloadClick(e) {
 navButtons.forEach(btn => {
   btn.addEventListener('click', () => {
     const target = btn.getAttribute('data-target');
+
+if (target === 'extensions') {
+  const vinti = getVintiInfo();
+  if (!vinti) {
+    alert('The Vinti Store is only available inside Vinti.');
+    return;
+  }
+}
+
     navButtons.forEach(b => b.classList.remove('active'));
     sections.forEach(s => s.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById(target).classList.add('active');
 
-    if (target === 'vinti') {
-      pageTitle.textContent = 'Vinti Download';
-      headerSub.textContent = 'Get the latest version of Vinti for your device.';
-    } else {
-      pageTitle.textContent = 'PlingifyPlug Hub Download';
-      headerSub.textContent = 'Download PlingifyPlug Hub for supported platforms.';
-    }
+if (target === 'vinti') {
+  pageTitle.textContent = 'Vinti Download';
+  headerSub.textContent = 'Get the latest version of Vinti for your device.';
+} else if (target === 'hub') {
+  pageTitle.textContent = 'PlingifyPlug Hub Download';
+  headerSub.textContent = 'Download PlingifyPlug Hub for supported platforms.';
+} else if (target === 'extensions') {
+  pageTitle.textContent = 'Vinti Store';
+  headerSub.textContent = 'Install extensions for Vinti.';
+}
   });
 });
 
@@ -348,4 +360,157 @@ function applyStatusToPill(el, status) {
 function setUnknownStatus(el, label) {
   el.classList.remove('ok', 'warn', 'danger');
   el.textContent = label || 'Unknown';
+}
+
+function getVintiInfo() {
+  const ua = navigator.userAgent;
+
+  // Must contain Vinti/x.y.z
+  const match = ua.match(/\bVinti\/([0-9.]+)\b/i);
+  if (!match) return null;
+
+  return {
+    isVinti: true,
+    version: match[1],
+    ua
+  };
+}
+
+function compareVersions(a, b) {
+  const pa = a.split('.').map(Number);
+  const pb = b.split('.').map(Number);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const diff = (pa[i] || 0) - (pb[i] || 0);
+    if (diff !== 0) return diff;
+  }
+  return 0;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const vinti = getVintiInfo();
+  const extGroup = document.getElementById('extensions-group');
+  const extNav = document.getElementById('extensions-nav');
+  const extList = document.getElementById('extensions-list');
+  const extSection = document.getElementById('extensions');
+
+  // Always hide the Extensions nav group
+  if (extGroup) extGroup.classList.add('is-hidden');
+
+  // Not inside Vinti → remove section completely
+  if (!vinti) {
+    if (extSection) extSection.remove();
+    return;
+  }
+
+  // Inside Vinti → show nav group
+  extGroup.classList.remove('is-hidden');
+
+  // Version gate
+  if (compareVersions(vinti.version, '3.0.0') < 0) {
+    if (extList) {
+      extList.innerHTML =
+        '<p class="hint">Please update Vinti to access extensions.</p>';
+    }
+    return;
+  }
+
+  loadExtensions(vinti.version);
+});
+
+async function loadExtensions(vintiVersion) {
+  const res = await fetch(
+    'https://raw.githubusercontent.com/BackupPASS/Download-Centre/main/extensions/index.json'
+  );
+  const data = await res.json();
+
+  const list = document.getElementById('extensions-list');
+  list.innerHTML = '';
+
+  const installed = await getInstalledExtensionIds();
+
+  data.extensions.forEach(ext => {
+    if (compareVersions(vintiVersion, ext.minVintiVersion) < 0) return;
+
+    const isInstalled = installed.includes(ext.id);
+
+    const card = document.createElement('div');
+    card.className = 'download-card';
+
+    card.innerHTML = `
+      <div class="download-content">
+        <div class="download-title">${ext.name}</div>
+        <div class="download-desc">
+          Requires Vinti ${ext.minVintiVersion}+
+        </div>
+        <div class="download-actions">
+          ${
+            isInstalled
+              ? `
+                <button class="btn primary" onclick="openExtension('${ext.id}')">
+                  Open
+                </button>
+                <button class="btn" onclick="uninstallExtension('${ext.id}')">
+                  Uninstall
+                </button>
+              `
+              : `
+                <button class="btn primary"
+                  onclick="installExtension('${ext.download}')">
+                  Install
+                </button>
+              `
+          }
+        </div>
+      </div>
+    `;
+
+    list.appendChild(card);
+  });
+}
+
+
+
+async function getInstalledExtensionIds() {
+  if (!window.vintiExtensions) return [];
+  const list = await window.vintiExtensions.list();
+  return list.map(e => e.id);
+}
+
+async function installExtension(url) {
+  const vinti = getVintiInfo();
+  if (!vinti) {
+    alert('The Vinti Store is only available inside Vinti.');
+    return;
+  }
+
+  if (!window.vintiExtensions) {
+    alert('Install API unavailable.');
+    return;
+  }
+
+  try {
+    const res = await window.vintiExtensions.install(url);
+
+    if (!res || res.ok === true) {
+      alert('Extension installed successfully.');
+      await loadExtensions(vinti.version);
+      return;
+    }
+
+    alert('Extension install failed.');
+  } catch (err) {
+    alert('Extension install failed.');
+  }
+}
+
+
+async function openExtension(id) {
+  if (!window.vintiExtensions) return;
+  await window.vintiExtensions.open(id);
+}
+
+async function uninstallExtension(id) {
+  if (!confirm('Uninstall this extension?')) return;
+  await window.vintiExtensions.uninstall(id);
+  location.reload();
 }
