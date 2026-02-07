@@ -1,516 +1,298 @@
-const navButtons = document.querySelectorAll('.nav button');
-const sections = document.querySelectorAll('.section');
-const pageTitle = document.getElementById('page-title');
-const headerSub = document.getElementById('header-sub');
-
-let downloadSystemStatus = 'unknown'; // 'online' | 'downtime' | 'offline' | 'error' | 'unknown'
-
-function isDownloadSystemOffline() {
-  return String(downloadSystemStatus).toLowerCase() === 'offline';
-}
-
-function showDownloadBlockedAlert() {
-  alert('Unable to Download.\n\nThere was an error connecting to the download system.');
-}
-
-function guardDownloadClick(e) {
-  if (!isDownloadSystemOffline()) return;
-  if (e) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
-  showDownloadBlockedAlert();
-  return false;
-}
-
-navButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    const target = btn.getAttribute('data-target');
-
-if (target === 'extensions') {
-  const vinti = getVintiInfo();
-  if (!vinti) {
-    alert('The Vinti Store is only available inside Vinti.');
-    return;
-  }
-}
-
-    navButtons.forEach(b => b.classList.remove('active'));
-    sections.forEach(s => s.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById(target).classList.add('active');
-
-if (target === 'vinti') {
-  pageTitle.textContent = 'Vinti Download';
-  headerSub.textContent = 'Get the latest version of Vinti for your device.';
-} else if (target === 'hub') {
-  pageTitle.textContent = 'PlingifyPlug Hub Download';
-  headerSub.textContent = 'Download PlingifyPlug Hub for supported platforms.';
-} else if (target === 'extensions') {
-  pageTitle.textContent = 'Vinti Store';
-  headerSub.textContent = 'Install extensions for Vinti.';
-}
-  });
-});
-
-function getOSInfo() {
-  const ua = navigator.userAgent;
-  if (ua.indexOf('Windows') !== -1) return { id: 'windows', name: 'Windows' };
-  if (ua.indexOf('Mac') !== -1 && ua.indexOf('iPhone') === -1) return { id: 'mac', name: 'macOS' };
-  if (ua.indexOf('iPhone') !== -1) return { id: 'iphone', name: 'iPhone' };
-  if (ua.indexOf('Android') !== -1) return { id: 'android', name: 'Android' };
-  if (ua.indexOf('CrOS') !== -1) return { id: 'chromeos', name: 'ChromeOS' };
-  if (ua.indexOf('Linux') !== -1 && ua.indexOf('Android') === -1) return { id: 'linux', name: 'Linux' };
-  return { id: 'unknown', name: 'your device' };
-}
-
-function createDownloadCard(title, desc, downloadLink, downloadLabel, extraLink) {
-  const card = document.createElement('div');
-  card.className = 'download-card';
-
-  const icon = document.createElement('div');
-  icon.className = 'download-icon';
-  icon.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-        d="M12 3v12m0 0 4-4m-4 4-4-4M5 15v3.5C5 20.09 6.79 21 12 21s7-0.91 7-2.5V15"/>
-    </svg>`;
-
-  const content = document.createElement('div');
-  content.className = 'download-content';
-
-  const t = document.createElement('div');
-  t.className = 'download-title';
-  t.textContent = title;
-
-  const d = document.createElement('div');
-  d.className = 'download-desc';
-  d.innerHTML = desc;
-
-  const actions = document.createElement('div');
-  actions.className = 'download-actions';
-
-if (downloadLink) {
-  const a = document.createElement('a');
-  a.href = downloadLink;
-  a.className = 'btn primary';
-  a.textContent = downloadLabel || 'Download';
-
-  a.addEventListener('click', guardDownloadClick);
-
-  actions.appendChild(a);
-}
-
-
-  if (extraLink) {
-    const b = document.createElement('a');
-    b.href = extraLink;
-    b.className = 'btn';
-    b.textContent = 'View requirements';
-    actions.appendChild(b);
-  }
-
-  content.appendChild(t);
-  content.appendChild(d);
-  content.appendChild(actions);
-  card.appendChild(icon);
-  card.appendChild(content);
-  return card;
-}
-
-async function handleWindowsBetaClick() {
-
-  if (isDownloadSystemOffline()) {
-    showDownloadBlockedAlert();
-    return;
-  }
-
-  if (!window.firebase || !firebase.auth) {
-    alert('Beta access is not available right now (auth not initialised).');
-    return;
-  }
-
-  const promptFn = window.vintiPrompt
-    ? (msg, def) => window.vintiPrompt(msg, def)
-    : (msg, def) => Promise.resolve(window.prompt(msg, def));
-
-  const email = await promptFn('Enter beta access email:', '');
-  if (!email) {
-    alert('Beta download cancelled.');
-    return;
-  }
-
-  const password = await promptFn('Enter beta access password:', '');
-  if (!password) {
-    alert('Beta download cancelled.');
-    return;
-  }
-
-  firebase.auth().signInWithEmailAndPassword(email, password)
-    .then(() => {
-      const betaUrl = 'https://github.com/BackupPASS/Download-Centre/releases/download/V3.1.0/Vinti-3.1.0-setup.exe';
-      window.location.href = betaUrl;
-    })
-    .catch((err) => {
-      console.error('Beta auth failed:', err);
-      alert('Incorrect credentials or access denied.');
-    });
-}
-
-const vintiContainer = document.getElementById('vinti-download');
-const os = getOSInfo();
-
-(function renderVinti() {
-  let card;
-  if (os.id === 'windows') {
-    const link = 'https://github.com/BackupPASS/Download-Centre/releases/download/V3.1.0/Vinti-3.1.0-setup.exe';
-    card = createDownloadCard(
-      'Windows Users',
-      'Vinti for Windows. Click download to get the latest installer.',
-      link,
-      'Download Vinti for Windows'
-    );
-
-    const actions = card.querySelector('.download-actions');
-    if (actions) {
-      const betaBtn = document.createElement('button');
-      betaBtn.type = 'button';
-      betaBtn.className = 'btn primary';
-      betaBtn.textContent = 'Download Vinti BETA for Windows';
-      betaBtn.addEventListener('click', handleWindowsBetaClick);
-      actions.appendChild(betaBtn);
-    }
-
-  } else if (os.id === 'mac') {
-    const link = 'https://github.com/BackupPASS/Download-Centre/releases/download/V2.70.50/Vinti-2.70.50.dmg';
-    card = createDownloadCard(
-      'macOS Users',
-      'Vinti for MacOS. Download the .app bundle and follow the instructions.',
-      link,
-      'Download Vinti for macOS'
-    );
-  } else if (os.id === 'linux') {
-    const link = 'https://github.com/BackupPASS/Downloads-Vinti/releases/download/V2.50.82/Vinti.Setup.Linux.zip';
-    card = createDownloadCard(
-      'Linux Users',
-      'Vinti for Linux (all major distributions). This release is currently in BETA.',
-      link,
-      'Download Vinti for Linux'
-    );
-  } else {
-    card = createDownloadCard(
-      os.name + ' Users',
-      `This software is not available for download on ${os.name}.`,
-      null,
-      null
-    );
-  }
-  vintiContainer.appendChild(card);
-})();
-
-const hubContainer = document.getElementById('hub-download');
-(function renderHub() {
-  let card;
-  if (os.id === 'windows') {
-    const link = 'https://github.com/BackupPASS/PlingifyPlug-Hub/releases/download/V1.0.40/PlingifyPlug-Hub-Setup-1.0.40.exe';
-    card = createDownloadCard(
-      'Windows Users',
-      'PlingifyPlug Hub is available for Windows. You will be taken to the Hub download page.',
-      link,
-      'Download PlingifyPlug-Hub'
-    );
-  } else {
-    card = createDownloadCard(
-      os.name + ' Users',
-      `PlingifyPlug Hub isn’t available on ${os.name}. You can still use Vinti where supported.`,
-      null,
-      null
-    );
-  }
-  hubContainer.appendChild(card);
-})();
-
-function hasAcceptedCookies() {
-  return document.cookie.split(";").some((item) =>
-    item.trim().startsWith("cookieAccepted=")
-  );
-}
-
-function showCookieNotice() {
-  if (!hasAcceptedCookies()) {
-    document.getElementById("cookie-card").style.display = "block";
-  }
-}
-
-function acceptCookies() {
-  document.getElementById("cookie-card").style.display = "none";
-  document.cookie = "cookieAccepted=true; max-age=31536000; path=/";
-}
-
-document.getElementById("accept-cookies").addEventListener("click", acceptCookies);
-setTimeout(showCookieNotice, 1000);
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  const vintiPill = document.getElementById('vinti-status-pill');
-  if (vintiPill) updateVintiStatusPill(vintiPill);
-
-  const hubPill = document.getElementById('hub-status-pill');
-  if (hubPill) updateVintiStatusPill(hubPill); 
-});
-
-async function updateVintiStatusPill(statusEl) {
-  statusEl.classList.remove('ok', 'warn', 'danger');
-  statusEl.textContent = 'Checking status…';
-
-  try {
-    const res = await fetch('https://backuppass.github.io/Status-Centre/');
-    if (!res.ok) {
-      throw new Error('Status Centre request failed with ' + res.status);
-    }
-
-    const html = await res.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-
-   const coreCard = Array.from(doc.querySelectorAll('.card')).find(card => {
-  const sectionTitle = card.querySelector('.section-title');
-  const h2 = card.querySelector('h2');
-  return (
-    sectionTitle &&
-    h2 &&
-    sectionTitle.textContent.trim().toLowerCase() === 'plingifyplug core systems' &&
-    h2.textContent.trim().toLowerCase() === 'plingifyplug'
-  );
-});
-
-if (!coreCard) {
-  console.warn('Status Centre: PlingifyPlug Core Systems card not found');
-  setUnknownStatus(statusEl, 'Status not found');
-  return;
-}
-
-const downloadLi = Array.from(coreCard.querySelectorAll('li')).find(li => {
-  const strong = li.querySelector('strong');
-  return strong && strong.textContent.trim().toLowerCase() === 'download system';
-});
-
-if (!downloadLi) {
-  console.warn('Status Centre: "Download System" line not found');
-  setUnknownStatus(statusEl, 'Download System not found');
-  return;
-}
-
-const hintEl = downloadLi.querySelector('.hint');
-const lineRaw = (hintEl ? hintEl.textContent : downloadLi.textContent) || '';
-const line = lineRaw.trim().toLowerCase();
-
-console.log('Download System status line:', line);
-
-let status = 'unknown';
-if (line.includes('online')) {
-  status = 'online';
-} else if (line.includes('downtime')) {
-  status = 'downtime';
-} else if (line.includes('offline')) {
-  status = 'offline';
-} else if (line.includes('error')) {
-  status = 'error';
-}
-
-downloadSystemStatus = status;
-
-applyStatusToPill(statusEl, status);
-  } catch (err) {
-    console.error('Failed to fetch Vinti status:', err);
-    setUnknownStatus(statusEl, 'Error fetching status');
-  }
-}
-
-function applyStatusToPill(el, status) {
-  el.classList.remove('ok', 'warn', 'danger');
-
-  switch (status) {
-    case 'online':
-      el.classList.add('ok');
-      el.textContent = 'Online';
-      break;
-
-    case 'downtime':
-      el.classList.add('warn');
-      el.textContent = 'Downtime';
-      break;
-
-    case 'offline':
-      el.classList.add('danger');
-      el.textContent = 'Offline';
-      break;
-
-    case 'error':
-      el.classList.add('danger');
-      el.textContent = 'Error';
-      break;
-
-    default:
-      setUnknownStatus(el, 'Unknown');
-      break;
-  }
-}
-
-function setUnknownStatus(el, label) {
-  el.classList.remove('ok', 'warn', 'danger');
-  el.textContent = label || 'Unknown';
-}
-
-function getVintiInfo() {
-  const ua = navigator.userAgent;
-
-  // Must contain Vinti/x.y.z
-  const match = ua.match(/\bVinti\/([0-9.]+)\b/i);
-  if (!match) return null;
-
-  return {
-    isVinti: true,
-    version: match[1],
-    ua
-  };
-}
-
-function compareVersions(a, b) {
-  const pa = a.split('.').map(Number);
-  const pb = b.split('.').map(Number);
-  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
-    const diff = (pa[i] || 0) - (pb[i] || 0);
-    if (diff !== 0) return diff;
-  }
-  return 0;
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  const vinti = getVintiInfo();
-  const extGroup = document.getElementById('extensions-group');
-  const extNav = document.getElementById('extensions-nav');
-  const extList = document.getElementById('extensions-list');
-  const extSection = document.getElementById('extensions');
-
-  // Always hide the Extensions nav group
-  if (extGroup) extGroup.classList.add('is-hidden');
-
-  // Not inside Vinti → remove section completely
-  if (!vinti) {
-    if (extSection) extSection.remove();
-    return;
-  }
-
-  // Inside Vinti → show nav group
-  extGroup.classList.remove('is-hidden');
-
-  // Version gate
-  if (compareVersions(vinti.version, '3.0.0') < 0) {
-    if (extList) {
-      extList.innerHTML =
-        '<p class="hint">Please update Vinti to access extensions.</p>';
-    }
-    return;
-  }
-
-  loadExtensions(vinti.version);
-});
-
-async function loadExtensions(vintiVersion) {
-  const res = await fetch(
-    'https://raw.githubusercontent.com/BackupPASS/Download-Centre/main/extensions/index.json'
-  );
-  const data = await res.json();
-
-  const list = document.getElementById('extensions-list');
-  list.innerHTML = '';
-
-  const installed = await getInstalledExtensionIds();
-
-  data.extensions.forEach(ext => {
-    if (compareVersions(vintiVersion, ext.minVintiVersion) < 0) return;
-
-    const isInstalled = installed.includes(ext.id);
-
-    const card = document.createElement('div');
-    card.className = 'download-card';
-
-    card.innerHTML = `
-      <div class="download-content">
-        <div class="download-title">${ext.name}</div>
-        <div class="download-desc">
-          Requires Vinti ${ext.minVintiVersion}+
-        </div>
-        <div class="download-actions">
-          ${
-            isInstalled
-              ? `
-                <button class="btn primary" onclick="openExtension('${ext.id}')">
-                  Open
-                </button>
-                <button class="btn" onclick="uninstallExtension('${ext.id}')">
-                  Uninstall
-                </button>
-              `
-              : `
-                <button class="btn primary"
-                  onclick="installExtension('${ext.download}')">
-                  Install
-                </button>
-              `
-          }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PlingifyPlug - Downloads</title>
+  <link rel="icon" href="PlingifyPlugLogo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css">
+  <script defer type="text/javascript" src="https://www.plingifyplug.com/im_livechat/loader/2"></script>
+  <script defer type="text/javascript" src="https://www.plingifyplug.com/im_livechat/assets_embed.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+  apiKey: "AIzaSyASVwoxjL0ZHSF6kOIxGOMks1A-9NllUMw",
+  authDomain: "plingifyplug.firebaseapp.com",
+  projectId: "plingifyplug",
+  storageBucket: "plingifyplug.firebasestorage.app",
+  messagingSenderId: "198551817496",
+  appId: "1:198551817496:web:e7d84490321637448a226d",
+  measurementId: "G-15Q2QCQK72"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+  </script>
+</head>
+<body>
+  <div class="shade"></div>
+
+  <div class="wrap">
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="PlingifyPlugLogo.png" alt="PlingifyPlug">
+        <div>
+          <div class="t1">PlingifyPlug</div>
+          <div class="sub">Downloads</div>
         </div>
       </div>
-    `;
 
-    list.appendChild(card);
-  });
-}
+      <div class="important">
+        <div class="important-title">Important Information</div>
+        <p>
+          Vinti and PlingifyPlug Hub are currently hosted via GitHub. Please only download from official PlingifyPlug links "PlingifyPlug.com", "PlingifyPlug.odoo.com" & "backuppass.github.io".
+        </p>
+        <p class="small">
+          For live status of apps, sites and systems, view the Status Centre.
+        </p>
+        <a class="pill-link" href="https://backuppass.github.io/Product-Centre/">
+          Open Product Centre
+        </a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-title">Downloads</div>
+        <div class="nav">
+          <button data-target="vinti" class="active">
+            Vinti
+            <span class="badge">Windows / macOS / Linux</span>
+          </button>
+          <button data-target="hub">
+            PlingifyPlug Hub
+            <span class="badge">Windows</span>
+          </button>
+<div id="extensions-group">
+  <div class="nav-title">Extensions</div>
+  <div class="nav">
+    <button data-target="extensions" id="extensions-nav">
+      Vinti
+      <span class="badge">Vinti Store</span>
+    </button>
+  </div>
+</div>
+
+        </div>
+      </div>
+    </aside>
+
+    <main class="panel">
+      <div class="header">
+        <div>
+          <h1 id="page-title">Vinti Download</h1>
+          <div class="subhead" id="header-sub">
+            Get the latest version of Vinti for your device.
+          </div>
+        </div>
+        <div class="toolbar">
+          <button class="btn ghost" onclick="window.location.href='https://backuppass.github.io/Status-Centre'">
+            View Status
+          </button>
+        </div>
+      </div>
+
+      <section id="vinti" class="section active">
+        <div class="grid">
+          <div class="card col-12">
+            <div class="section-title">Download</div>
+<div class="vinti-header-row">
+  <h2>Vinti</h2>
+  <span id="vinti-status-pill" class="pill mono">Checking status…</span>
+</div>
+<p class="hint">We’ll detect your platform and show the correct download option below.</p>
+<div id="vinti-download"></div>
+          </div>
+
+          <div class="card col-12">
+            <div class="section-title">About Vinti</div>
+            <h2>Fast, Efficient & Secure</h2>
+            <p class="hint">
+              Vinti is a modern web browser designed for speed, efficiency and security, with PlingifyPlug SafeGuard built in to help
+              protect you from malicious downloads and harmful websites.
+            </p>
+            <ul class="clean">
+              <li>• Integrated PlingifyPlug SafeGuard™ for safer browsing.</li>
+              <li>• Optimised for everyday use such as streaming, shopping and productivity.</li>
+              <li>• Available for Windows, macOS and Linux (Linux currently in BETA).</li>
+            </ul>
+          </div>
+
+          <div class="card col-12">
+            <div class="section-title">Instructions</div>
+            <h2>Installing Vinti</h2>
+            <h3>Windows</h3>
+            <ul class="clean">
+              <li>1. Download the setup application.</li>
+              <li>2. Run the application.</li>
+              <li>3. Follow the instructions.</li>
+              <li>4. Once installed, open Vinti from your desktop.</li>
+            </ul>
+            <h3>MacOS</h3>
+            <ul class="clean">
+              <li>1. Download the application.</li>
+              <li>2. Run the application.</li>
+              <li>3. If the application doesnt open please allow the application to run under secuirty in System Preferences > Security & Privacy > General.</li>
+            </ul>
+            <h3>Linux</h3>
+            <ul class="clean">
+              <li>1. Download the zip file.</li>
+              <li>2. Exract the folder.</li>
+              <li>3. Open the instructions file.</li>
+              <li>4. Follow the steps to run the installer.</li>
+              <li>5. Open Vinti from the app drawer.</li>
+            </ul>
+            <div class="btn-row">
+              <a class="btn" href="https://www.plingifyplug.com/privacy">Privacy Policy</a>
+              <a class="btn" href="https://backuppass.github.io/Status-Centre">Open Status Centre</a>
+            </div>
+          </div>
+
+          <div class="card col-12">
+            <div class="section-title">Requirements</div>
+            <h2>Vinti System Requirements</h2>
+            <div class="two-col-req">
+              <div class="req-block">
+                <h3>Windows</h3>
+                <ul>
+                  <li>• Windows 11 (64-bit)</li>
+                  <li>• 4 GB RAM (8 GB recommended)</li>
+                  <li>• 550 MB free disk space</li>
+                  <li>• 1.5GB free disk space if Local AI Model chosen on installation</li>
+                  <li>• Stable internet connection for updates</li>
+                </ul>
+              </div>
+              <div class="req-block">
+                <h3>macOS</h3>
+                <ul>
+                  <li>• macOS Big Sur 12.0 or later</li>
+                  <li>• Intel or Apple Silicon Mac</li>
+                  <li>• Device Model 2016+</li>
+                  <li>• 8 GB RAM minimum</li>
+                  <li>• 550 MB free disk space</li>
+                </ul>
+              </div>
+              <div class="req-block">
+                <h3>Linux (BETA)</h3>
+                <ul>
+                  <li>• Modern 64-bit distro (Ubuntu, Debian, etc.)</li>
+                  <li>• 4 GB RAM minimum</li>
+                  <li>• 550 MB free disk space</li>
+                  <li>• Ability to run AppImage / installer script</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="hub" class="section">
+        <div class="grid">
+          <div class="card col-12">
+            <div class="section-title">Download</div>
+            <h2>PlingifyPlug Hub</h2>
+           <span id="hub-status-pill" class="pill mono">Checking status…</span>
+            <p class="hint">We’ll detect your platform and show if PlingifyPlug Hub is available.</p>
+            <div id="hub-download"></div>
+          </div>
+
+          <div class="card col-12">
+            <div class="section-title">About PlingifyPlug Hub</div>
+            <h2>Your Launcher for PlingifyPlug</h2>
+            <p class="hint">
+              PlingifyPlug Hub is a central launcher where you can access Vinti, Instonomo and other PlingifyPlug services from one place.
+            </p>
+            <ul class="clean">
+              <li>• Quickly install and update supported PlingifyPlug apps.</li>
+              <li>• View announcements and information directly inside the Hub.</li>
+              <li>• Integrated PlingifyPlug SafeGuard for additional safety.</li>
+            </ul>
+          </div>
+
+          <div class="card col-12">
+            <div class="section-title">Instructions</div>
+            <h2>Installing PlingifyPlug Hub</h2>
+            <h3>Windows</h3>
+            <ul class="clean">
+              <li>1. Download the setup application.</li>
+              <li>2. Run the application.</li>
+              <li>3. Follow the instructions.</li>
+              <li>4. Once installed, open PlingifyPlug-Hub from your desktop.</li>
+            </ul>
+            <div class="btn-row">
+              <a class="btn-small" href="https://www.plingifyplug.com/privacy">Privacy Policy</a>
+              <a class="btn-small" href="https://backuppass.github.io/Status-Centre">Open Status Centre</a>
+            </div>
+          </div>
+
+          <div class="card col-12">
+            <div class="section-title">Requirements</div>
+            <h2>PlingifyPlug Hub System Requirements</h2>
+            <div class="two-col-req">
+              <div class="req-block">
+                <h3>Windows</h3>
+                <ul>
+                  <li>• Windows 11 (64-bit)</li>
+                  <li>• 4 GB RAM minimum</li>
+                  <li>• 500 MB free disk space</li>
+                  <li>• Internet connection for updates and downloads</li>
+                </ul>
+              </div>
+              <div class="req-block">
+                <h3>Other Platforms</h3>
+                <ul>
+                  <li>• PlingifyPlug Hub is currently only available on Windows.</li>
+                  <li>• For other platforms, you can still use Vinti where supported.</li>
+                </ul>
+              </div>
+              <div class="req-block">
+                <h3>Notes</h3>
+                <ul>
+                  <li>• Hub is currently in BETA and may contain bugs.</li>
+                  <li>• You use this application at your own risk.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+        <section id="extensions" class="section">
+  <div class="grid">
+    <div class="card col-12">
+      <div class="section-title">Vinti Store</div>
+      <h2>Extensions for Vinti</h2>
+<p class="hint" id="extensions-hint">
+  <span class="spinner"></span>
+  <span id="extensions-hint-text">Loading available extensions…</span>
+  <span id="extensions-count-pill" class="pill ok" style="display:none"></span>
+</p>
+      <div id="extensions-list"></div>
+    </div>
+  </div>
+</section>
+    </main>
+  </div>
+
+  <div class="footer">
+    © 2026 PlingifyPlug. All rights reserved. |
+    <a href="https://plingifyplug.com/">PlingifyPlug</a> |
+    <a href="https://plingifyplug.com/contact-us">Support</a> |
+    <a href="https://plingifyplug.com/privacy">Privacy Policy</a> |
+    <a href="https://backuppass.github.io/Product-Centre">Product-Centre</a>
+  </div>
 
 
+  <div class="cookie-card" id="cookie-card">
+    <span class="title">🍪 Cookie Notice</span>
+    <p class="description">
+      We use cookies to ensure that we give you the best experience on our website.
+      <a href="https://www.plingifyplug.com/privacy">Read cookies policies</a>.
+    </p>
+    <div class="actions">
+      <button class="accept" id="accept-cookies">Accept</button>
+    </div>
+  </div>
 
-async function getInstalledExtensionIds() {
-  if (!window.vintiExtensions) return [];
-  const list = await window.vintiExtensions.list();
-  return list.map(e => e.id);
-}
-
-async function installExtension(url) {
-  const vinti = getVintiInfo();
-  if (!vinti) {
-    alert('The Vinti Store is only available inside Vinti.');
-    return;
-  }
-
-  if (!window.vintiExtensions) {
-    alert('Install API unavailable.');
-    return;
-  }
-
-  try {
-    const res = await window.vintiExtensions.install(url);
-
-    if (!res || res.ok === true) {
-      alert('Extension installed successfully.');
-      await loadExtensions(vinti.version);
-      return;
-    }
-
-    alert('Extension install failed.');
-  } catch (err) {
-    alert('Extension install failed.');
-  }
-}
-
-
-async function openExtension(id) {
-  if (!window.vintiExtensions) return;
-  await window.vintiExtensions.open(id);
-}
-
-async function uninstallExtension(id) {
-  if (!confirm('Uninstall this extension?')) return;
-  await window.vintiExtensions.uninstall(id);
-  location.reload();
-}
+<script src="script.js"></script>
+</body>
+</html>
