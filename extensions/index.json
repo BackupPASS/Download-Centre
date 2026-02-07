@@ -14,6 +14,21 @@
         "Local processing only"
       ],
       "download": "https://raw.githubusercontent.com/BackupPASS/Download-Centre/main/extensions/calculator/calculator-extension-v2.zip"
+    },
+    {
+      "id": "notes",
+      "name": "Notes",
+      "version": "1.0.0",
+      "minVintiVersion": "3.1.80",
+      "publisher": "PlingifyPlug",
+      "verified": true,
+      "description": "Simple, private notes stored locally inside Vinti.",
+      "permissions": [
+        "Local storage only",
+        "No internet access",
+        "No tracking"
+      ],
+      "download": "https://raw.githubusercontent.com/BackupPASS/Download-Centre/main/extensions/notes/notes-extension.zip"
     }
   ]
 }
