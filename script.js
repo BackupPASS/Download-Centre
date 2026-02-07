@@ -475,15 +475,19 @@ let addedCount = 0;
   data.extensions.forEach(ext => {
     if (compareVersions(vintiVersion, ext.minVintiVersion) < 0) return;
 
-    const installedEntry = installed.find(i => i.id === ext.id);
-    const isInstalled = !!installedEntry;
+const installedEntry = installed.find(i => i.id === ext.id);
+const isInstalled = !!installedEntry;
+
+const installedVersion =
+  installedEntry?.version ||
+  (isInstalled ? '1.0.0' : null);
 
 let hasUpdate = false;
 
 if (
   isInstalled &&
-  typeof installedEntry?.version === 'string' &&
-  compareVersions(ext.version, installedEntry.version) > 0
+  typeof installedVersion === 'string' &&
+  compareVersions(ext.version, installedVersion) > 0
 ) {
   hasUpdate = true;
 }
@@ -512,7 +516,7 @@ card.innerHTML = `
       ? hasUpdate
         ? `
           <button class="btn primary"
-            onclick="updateExtension('${ext.download}')">
+            onclick="updateExtension('${ext.id}', '${ext.version}', '${ext.download}')">
             Update
           </button>
           <button class="btn ghost" onclick="openExtension('${ext.id}')">
@@ -526,7 +530,7 @@ card.innerHTML = `
         `
       : `
         <button class="btn primary"
-          onclick="installExtension('${ext.download}')">
+          onclick="installExtension('${ext.id}', '${ext.version}', '${ext.download}')">
           Install
         </button>
       `
@@ -568,22 +572,16 @@ async function getInstalledExtensions() {
   if (!window.vintiExtensions) return [];
   const list = await window.vintiExtensions.list();
 
-  return list.map(e => ({
-    id: e.id,
-    version: typeof e.version === 'string' ? e.version : null
-  }));
+return list.map(e => ({
+  id: e.id,
+  version: localStorage.getItem(`vinti-ext-version-${e.id}`)
+}));
 }
 
-
-async function installExtension(url) {
+async function installExtension(id, version, url) {
   const vinti = getVintiInfo();
-  if (!vinti) {
+  if (!vinti || !window.vintiExtensions) {
     alert('The Vinti Store is only available inside Vinti.');
-    return;
-  }
-
-  if (!window.vintiExtensions) {
-    alert('Install API unavailable.');
     return;
   }
 
@@ -591,13 +589,12 @@ async function installExtension(url) {
     const res = await window.vintiExtensions.install(url);
 
     if (!res || res.ok === true) {
+      localStorage.setItem(`vinti-ext-version-${id}`, version);
+
       alert('Extension installed successfully.');
       await loadExtensions(vinti.version);
-      return;
     }
-
-    alert('Extension install failed.');
-  } catch (err) {
+  } catch {
     alert('Extension install failed.');
   }
 }
@@ -617,14 +614,9 @@ if (vinti) {
 }
 }
 
-async function updateExtension(url) {
+async function updateExtension(id, version, url) {
   const vinti = getVintiInfo();
-  if (!vinti) {
-    alert('The Vinti Store is only available inside Vinti.');
-    return;
-  }
-
-  if (!window.vintiExtensions) {
+  if (!vinti || !window.vintiExtensions) {
     alert('Update API unavailable.');
     return;
   }
@@ -633,17 +625,16 @@ async function updateExtension(url) {
     const res = await window.vintiExtensions.install(url);
 
     if (!res || res.ok === true) {
+
+      localStorage.setItem(`vinti-ext-version-${id}`, version);
+
       alert('Extension updated successfully.');
       await loadExtensions(vinti.version);
-      return;
     }
-
-    alert('Extension update failed.');
-  } catch (err) {
+  } catch {
     alert('Extension update failed.');
   }
 }
-
 
 function showExtensionInfo(id) {
   fetch('https://raw.githubusercontent.com/BackupPASS/Download-Centre/main/extensions/index.json')
