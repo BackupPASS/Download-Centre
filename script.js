@@ -570,13 +570,15 @@ updateExtensionsHint({ count: addedCount });
 
 async function getInstalledExtensions() {
   if (!window.vintiExtensions) return [];
-  const list = await window.vintiExtensions.list();
 
-return list.map(e => ({
-  id: e.id,
-  version: localStorage.getItem(`vinti-ext-version-${e.id}`)
-}));
+  const ids = await window.vintiExtensions.list();
+
+  return ids.map(id => ({
+    id,
+    version: localStorage.getItem(`vinti-ext-version-${id}`)
+  }));
 }
+
 
 async function installExtension(id, version, url) {
   const vinti = getVintiInfo();
@@ -616,21 +618,13 @@ if (vinti) {
 
 async function updateExtension(id, version, url) {
   const vinti = getVintiInfo();
-  if (!vinti || !window.vintiExtensions) {
-    alert('Update API unavailable.');
-    return;
-  }
+  if (!vinti || !window.vintiExtensions) return;
 
   try {
-    const res = await window.vintiExtensions.install(url);
-
-    if (!res || res.ok === true) {
-
-      localStorage.setItem(`vinti-ext-version-${id}`, version);
-
-      alert('Extension updated successfully.');
-      await loadExtensions(vinti.version);
-    }
+    await window.vintiExtensions.update(id, url);
+    localStorage.setItem(`vinti-ext-version-${id}`, version);
+    await loadExtensions(vinti.version);
+    alert('Extension updated successfully.');
   } catch {
     alert('Extension update failed.');
   }
