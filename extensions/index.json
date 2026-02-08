@@ -18,7 +18,7 @@
     {
       "id": "notes",
       "name": "Notes",
-      "version": "1.0.0",
+      "version": "1.40.3",
       "minVintiVersion": "3.1.80",
       "publisher": "PlingifyPlug",
       "verified": true,
@@ -28,7 +28,7 @@
         "No internet access",
         "No tracking"
       ],
-      "download": "https://raw.githubusercontent.com/BackupPASS/Download-Centre/main/extensions/notes/notes-extension.zip"
+      "download": "https://raw.githubusercontent.com/BackupPASS/Download-Centre/main/extensions/notes/notes-extension-V1.40.3.zip"
     }
   ]
 }
