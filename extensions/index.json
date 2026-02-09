@@ -29,6 +29,19 @@
         "No tracking"
       ],
       "download": "https://raw.githubusercontent.com/BackupPASS/Download-Centre/main/extensions/notes/notes-extension-V1.40.3.zip"
+    },
+        {
+      "id": "notes",
+      "name": "Notes",
+      "version": "0.0.0",
+      "minVintiVersion": "3.2.0",
+      "publisher": "Error Grabbing Information",
+      "verified": false,
+      "description": "Error Grabbing Information",
+      "permissions": [
+        "Error Grabbing Information"
+      ],
+      "download": "https://backuppass.github.io/Support-Centre"
     }
   ]
 }
