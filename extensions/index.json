@@ -31,8 +31,8 @@
       "download": "https://raw.githubusercontent.com/BackupPASS/Download-Centre/main/extensions/notes/notes-extension-V1.40.3.zip"
     },
         {
-      "id": "notes",
-      "name": "Notes",
+      "id": "plingifyplug-safeguard-addon",
+      "name": "PlingifyPlug Safeguard Addon",
       "version": "0.0.0",
       "minVintiVersion": "3.2.0",
       "publisher": "Error Grabbing Information",
