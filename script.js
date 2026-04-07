@@ -148,7 +148,7 @@ async function handleWindowsBetaClick() {
 
   firebase.auth().signInWithEmailAndPassword(email, password)
     .then(() => {
-      const betaUrl = 'https://github.com/BackupPASS/Download-Centre/releases/download/V3.2.0/Vinti-3.2.0-setup.exe';
+      const betaUrl = 'https://github.com/BackupPASS/Download-Centre/releases/download/V3.2.1/Vinti-3.2.1-setup.exe';
       window.location.href = betaUrl;
     })
     .catch((err) => {
