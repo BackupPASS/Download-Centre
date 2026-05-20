@@ -13,7 +13,7 @@
         "No tracking",
         "Local processing only"
       ],
-      "download": "https://raw.githubusercontent.com/BackupPASS/Download-Centre/main/extensions/calculator/calculator-extension-v2.1.zip"
+      "download": "https://github.com/BackupPASS/Download-Centre/raw/refs/heads/main/extensions/calculator/calculator-extension-v2.1.zip"
     },
     {
       "id": "notes",
@@ -28,7 +28,7 @@
         "No internet access",
         "No tracking"
       ],
-      "download": "https://raw.githubusercontent.com/BackupPASS/Download-Centre/main/extensions/notes/notes-extension-v2.1.zip"
+      "download": "https://github.com/BackupPASS/Download-Centre/raw/refs/heads/main/extensions/notes/notes-extension-v2.1.zip"
     }
   ]
 }
