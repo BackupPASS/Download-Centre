@@ -588,14 +588,18 @@ async function installExtension(id, version, url) {
   }
 
   try {
-    const res = await window.vintiExtensions.install(url);
+const res = await window.vintiExtensions.install(url);
 
-    if (!res || res.ok === true) {
-      localStorage.setItem(`vinti-ext-version-${id}`, version);
+console.log('Extension install result:', res);
 
-      alert('Extension installed successfully.');
-      await loadExtensions(vinti.version);
-    }
+if (res === false) {
+  throw new Error('Install failed');
+}
+
+localStorage.setItem(`vinti-ext-version-${id}`, version);
+
+alert('Extension installed successfully.');
+await loadExtensions(vinti.version);
   } catch {
     alert('Extension install failed.');
   }
