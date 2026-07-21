@@ -3,6 +3,12 @@ const sections = document.querySelectorAll('.section');
 const pageTitle = document.getElementById('page-title');
 const headerSub = document.getElementById('header-sub');
 
+let userSignedIn = false;
+
+window.addEventListener("authStateChanged", (e) => {
+  userSignedIn = !!e.detail.user;
+});
+
 let downloadSystemStatus = 'unknown'; // 'online' | 'downtime' | 'offline' | 'error' | 'unknown'
 
 function isDownloadSystemOffline() {
@@ -21,6 +27,39 @@ function guardDownloadClick(e) {
   }
   showDownloadBlockedAlert();
   return false;
+}
+
+function requireAccount(e) {
+  if (userSignedIn) {
+    return true;
+  }
+
+  e.preventDefault();
+
+  const accountButton = document.getElementById("accountButton");
+
+  if (accountButton) {
+    accountButton.click();
+  } else {
+    alert("Please sign in to download.");
+  }
+
+  return false;
+}
+
+function requireLogin(downloadUrl) {
+
+  const user = auth.currentUser;
+
+  if (!user) {
+    if (window.openVintiAuth) {
+      window.openVintiAuth();
+    }
+    return false;
+  }
+
+  window.location.href = downloadUrl;
+  return true;
 }
 
 navButtons.forEach(btn => {
@@ -92,11 +131,28 @@ function createDownloadCard(title, desc, downloadLink, downloadLabel, extraLink)
 
 if (downloadLink) {
   const a = document.createElement('a');
-  a.href = downloadLink;
+  a.href = "#";
   a.className = 'btn primary';
   a.textContent = downloadLabel || 'Download';
 
-  a.addEventListener('click', guardDownloadClick);
+  a.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    if (isDownloadSystemOffline()) {
+      showDownloadBlockedAlert();
+      return;
+    }
+
+    if (window.firebaseAuthUser) {
+      window.location.href = downloadLink;
+    } else {
+      window.pendingDownload = downloadLink;
+
+      if (window.openVintiAuth) {
+        window.openVintiAuth();
+      }
+    }
+  });
 
   actions.appendChild(a);
 }
@@ -118,45 +174,6 @@ if (downloadLink) {
   return card;
 }
 
-async function handleWindowsBetaClick() {
-
-  if (isDownloadSystemOffline()) {
-    showDownloadBlockedAlert();
-    return;
-  }
-
-  if (!window.firebase || !firebase.auth) {
-    alert('Beta access is not available right now (auth not initialised).');
-    return;
-  }
-
-  const promptFn = window.vintiPrompt
-    ? (msg, def) => window.vintiPrompt(msg, def)
-    : (msg, def) => Promise.resolve(window.prompt(msg, def));
-
-  const email = await promptFn('Enter beta access email:', '');
-  if (!email) {
-    alert('Beta download cancelled.');
-    return;
-  }
-
-  const password = await promptFn('Enter beta access password:', '');
-  if (!password) {
-    alert('Beta download cancelled.');
-    return;
-  }
-
-  firebase.auth().signInWithEmailAndPassword(email, password)
-    .then(() => {
-      const betaUrl = 'https://github.com/BackupPASS/Download-Centre/releases/download/V3.2.5/Vinti-3.2.5-setup.exe';
-      window.location.href = betaUrl;
-    })
-    .catch((err) => {
-      console.error('Beta auth failed:', err);
-      alert('Incorrect credentials or access denied.');
-    });
-}
-
 const vintiContainer = document.getElementById('vinti-download');
 const os = getOSInfo();
 
@@ -170,16 +187,6 @@ const os = getOSInfo();
       link,
       'Download Vinti for Windows'
     );
-
-    const actions = card.querySelector('.download-actions');
-    if (actions) {
-      const betaBtn = document.createElement('button');
-      betaBtn.type = 'button';
-      betaBtn.className = 'btn primary';
-      betaBtn.textContent = 'Download Vinti BETA for Windows';
-      betaBtn.addEventListener('click', handleWindowsBetaClick);
-      actions.appendChild(betaBtn);
-    }
 
   } else if (os.id === 'mac') {
     const link = 'https://github.com/BackupPASS/Download-Centre/releases/download/V2.70.50/Vinti-2.70.50.dmg';
@@ -654,4 +661,3 @@ function showExtensionInfo(id) {
       );
     });
 }
-
